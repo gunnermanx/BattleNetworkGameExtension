@@ -4,6 +4,8 @@ import com.smartfoxserver.v2.entities.User;
 
 import battleNetwork.entities.Arena;
 import battleNetwork.entities.Player;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 
 // Responsible for the game and all entities
@@ -84,26 +86,37 @@ public class BattleNetworkGame {
 		}	
 	}
 	
-	public void PlayChip(int playerId, int cid) {
-		// TEMP
-		// treat all chips as a basic straight projectile		
-		int chipCost = 2;
-		Player player = GetPlayer(playerId);		
+	public void PlayChip(int playerId, int cid) {		
+		// we know cid is valid, already validated in the handler
+		JSONObject chipJson = ext.GameData().GetChipData(cid);
 		
-		// do some validation 
+		this.ext.trace("play chip");	
+		
+		// Get the cost, validate and deduct
+		int chipCost = chipJson.getInt(GameData.ChipDataKeys.COST);
+		Player player = GetPlayer(playerId);
 		if (player == null || player.energy < chipCost) {
 			// logs?
 			// error?
+			this.ext.trace("ERROR is null or player has less energy than the cost");
+			
 			return;
-		}				
-		
-		// TODO how do we play different chips (in terms of spawning projectiles, custom paths for projectiles)
-		
-		player.energy -= chipCost;	
-		this.arena.SpawnProjectile(player.owner, cid);		
-		
+		}
+		player.energy -= chipCost;
 		this.ext.QueueEnergyChanged(playerId, -chipCost);
-		this.ext.QueueSpawnProjectile(playerId, cid);
+		
+		// For each projectile listed, we want to spawn it
+		JSONArray projectiles = chipJson.getJSONArray(GameData.ChipDataKeys.PROJECTILES);
+		for (int i = 0; i < projectiles.size(); i++) {
+			JSONObject projectileJson = projectiles.getJSONObject(i);
+			int pid = projectileJson.getInt(GameData.ProjectileDataKeys.ID);
+			
+			// validate projectile id, in case of errors
+			if (ext.GameData().IsValidProjectileId(pid)) {			
+				this.arena.SpawnProjectile(player.owner, pid);
+				this.ext.QueueSpawnProjectile(playerId, pid);
+			}
+		}	
 	}
 	
 	

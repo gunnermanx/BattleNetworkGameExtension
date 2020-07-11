@@ -8,8 +8,6 @@ import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.extensions.BaseClientRequestHandler;
 
 import battleNetwork.BattleNetworkExtension;
-import battleNetwork.entities.Arena;
-import battleNetwork.entities.Unit;
 
 @Instantiation(InstantiationMode.SINGLE_INSTANCE)
 public class BasicAttackHandler extends BaseClientRequestHandler {

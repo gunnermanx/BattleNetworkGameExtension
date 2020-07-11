@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GameTicker implements Runnable {	
 	private static final int INITIAL_DELAY_MS = 0; 
-	private static final int INTERVAL_MS = 100;
+	private static final int INTERVAL_MS = 50;
 	
 	private static GameTicker ticker = null;	
 	private BattleNetworkExtension ext;

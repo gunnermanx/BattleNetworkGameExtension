@@ -30,7 +30,6 @@ import battleNetwork.eventHandlers.UserJoinRoomHandler;
 public class BattleNetworkExtension extends SFSExtension {
 	
 	private static final String CMD_UPDATE = "tick";
-	private static final String CMD_ASSIGN_PLAYER = "ap";
 
 	
 	public ArrayList<LinkedList<Command>> commands;
@@ -49,11 +48,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void init() {
 		trace("BattleNetworkExtension started");
 				
-		gameData = new GameData();
-		gameData.Load();
-		
-		
-		
+		gameData = new GameData(this);		
 		
 		// TODO Send data about each player, maybe basic unit data?
 		
@@ -92,6 +87,10 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	public BattleNetworkGame Game() {
 		return game;
+	}
+	
+	public GameData GameData() {
+		return gameData;
 	}
 	
 	public void OnGameTick(int current) {
@@ -148,7 +147,6 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	public void QueueSpawnProjectile(int playerId, int cid) {
-		trace("QueueSpawnProjectile");
 		Command sp = new SpawnProjectileCommand(playerId, cid);
 		commands.get(currentTick).add(sp);
 	}

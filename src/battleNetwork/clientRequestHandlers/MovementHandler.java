@@ -8,8 +8,6 @@ import com.smartfoxserver.v2.exceptions.SFSRuntimeException;
 import com.smartfoxserver.v2.extensions.BaseClientRequestHandler;
 
 import battleNetwork.BattleNetworkExtension;
-import battleNetwork.entities.Arena;
-import battleNetwork.entities.Arena.TryMovePlayerUnitResult;
 
 @Instantiation(InstantiationMode.SINGLE_INSTANCE)
 public class MovementHandler extends BaseClientRequestHandler {

@@ -1,9 +1,11 @@
-package battleNetwork.entities;
+package battleNetwork.entities.Projectiles;
+
+import battleNetwork.entities.Arena;
 
 public class StraightProjectile extends Projectile {
 	
-	public StraightProjectile(Arena.Ownership owner, int cid, int posX, int posY) {
-		super(owner, cid, posX, posY);
+	public StraightProjectile(Arena.Ownership owner, int speed, int damage, int posX, int posY) {
+		super(owner, speed, damage, posX, posY);
 	}
 	
 	public void Advance() {

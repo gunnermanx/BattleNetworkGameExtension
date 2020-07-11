@@ -1,12 +1,13 @@
 package battleNetwork.entities;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import com.smartfoxserver.v2.entities.User;
 
 import battleNetwork.BattleNetworkExtension;
+import battleNetwork.entities.Projectiles.Projectile;
+import battleNetwork.entities.Projectiles.ProjectileFactory;
+import net.sf.json.JSONObject;
 
 public class Arena {
 	private static final int ARENA_WIDTH = 3;
@@ -95,8 +96,11 @@ public class Arena {
 		return u;
 	}
 	
-	public void SpawnProjectile(Arena.Ownership owner, int cid) {
-		// TEMP Treat everything as a straight projectile for test
+	public void SpawnProjectile(Arena.Ownership owner, int pid) {
+		// based on the pid, we want to spawn a type of Projectile
+		JSONObject projectileJson = this.ext.GameData().GetProjectileData(pid);
+		
+		// Clean this up later... just ugly
 		int x = 0; 
 		int y = 0;
 		if (owner == Arena.Ownership.PLAYER1) {
@@ -105,12 +109,14 @@ public class Arena {
 		} else if (owner == Arena.Ownership.PLAYER2) {
 			x = p2PlayerUnit.posX;
 			y = p2PlayerUnit.posY;
+		}				
+		
+		Projectile p = ProjectileFactory.getProjectile(owner, projectileJson, x, y);		
+		if (p != null) {
+			projectiles.add(p);
+		} else {
+			this.ext.trace("projectile was null!");
 		}
-		
-		StraightProjectile p = new StraightProjectile(owner, cid, x, y);
-		projectiles.add(p);
-		
-		// send message to client that straight projectile has spawned		
 	}
 	
 	public void TickProjectiles() {
@@ -121,41 +127,40 @@ public class Arena {
 			Projectile p = projectileIter.next();
 			p.Advance();
 			
-			// this.ext.trace(String.format("Advancing projectile [%d, %d]", p.posX,  p.posY));
+			//this.ext.trace(String.format("Advancing projectile [%d, %d]", p.posX,  p.posY));
 			
 			// check if the projectile hit anything
 			// not going to be that costly, since there wont be that many projectiles / units
 			
-			LinkedList<Unit> units;
-			
+			LinkedList<Unit> units;			
 			if (p.owner == Arena.Ownership.PLAYER1) {
 				units = p2Units;
 			} else {
 				units = p1Units;
 			}
 			
-			Iterator<Unit> unitIter = p2Units.iterator();
+			Iterator<Unit> unitIter = units.iterator();
 			while (unitIter.hasNext()) {
 				Unit u = unitIter.next();
 				
 				//this.ext.trace(String.format("Unit at [%d, %d]", u.posX,  u.posY));
 				
 				// HIT!
-				if (u.posX == p.posX && u.posY == p.posY) {
+				if (u.posX == p.posX && u.posY == p.posY) {	
 					
-					this.ext.trace(String.format("  hit!"));
+					this.ext.trace("hit!");
+					//this.ext.trace(String.format("  Hit with projectile %d!", p.toString()));
+															
+					u.hitpoints -= p.damage;					
+					ext.QueueDamageDealt(u.id, p.damage);
 					
-					int damage = 10;						
-					u.hitpoints -= damage;						
-					ext.QueueDamageDealt(u.id, damage);
-					if (u.hitpoints <= 0) {
-						unitIter.remove();
-						
+					if (u.hitpoints <= 0) {						
+						unitIter.remove();					
 						// TODO, if this is a player unit we need to trigger some game ending logic
 					}
 					
 					// remove projectile
-					projectileIter.remove();
+					projectileIter.remove();					
 					break;
 				}
 				else if (p.posX >= ARENA_LENGTH || p.posX < 0 || p.posY >= ARENA_WIDTH || p.posY < 0) {
@@ -255,11 +260,6 @@ public class Arena {
 				arena[x][y].state == Tile.State.EMPTY;
 	}
 	
-		
-	
-	
-	//public class Player
-	
 	
 	public enum Ownership {
 		NEUTRAL(0),
@@ -270,11 +270,7 @@ public class Arena {
 		
 		private Ownership(int val) {
 			this.val = val;
-		}
-		
-		private int getVal() {
-			return val;
-		}
+		}		
 	}
 	
 	public class TryMovePlayerUnitResult {

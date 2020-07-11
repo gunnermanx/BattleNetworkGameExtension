@@ -19,10 +19,6 @@ public class Tile {
 		
 		private State(int id) {
 			this.val = id;
-		}
-		
-		private int getVal() { 
-			return val;
-		}
+		}		
 	}
 }
