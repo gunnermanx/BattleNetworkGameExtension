@@ -1,5 +1,6 @@
 package battleNetwork;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class GameTicker implements Runnable {	
@@ -9,12 +10,14 @@ public class GameTicker implements Runnable {
 	private static GameTicker ticker = null;	
 	private BattleNetworkExtension ext;
 	
+    private ScheduledFuture<?> taskHandle;
+	
 	public int current = 0;
 	
 	public static GameTicker Start(BattleNetworkExtension ext) {
 		if (ticker == null) {
 			ticker = new GameTicker(ext);
-			ext.getApi().getSystemScheduler().scheduleAtFixedRate(
+			ticker.taskHandle = ext.getApi().getSystemScheduler().scheduleAtFixedRate(
 				ticker, 
 				INITIAL_DELAY_MS, 
 				INTERVAL_MS, 
@@ -22,6 +25,10 @@ public class GameTicker implements Runnable {
 			);			
 		}
 		return ticker;
+	}
+	
+	public void Stop() {
+		this.taskHandle.cancel(true);
 	}
 	
 	private GameTicker(BattleNetworkExtension ext) {

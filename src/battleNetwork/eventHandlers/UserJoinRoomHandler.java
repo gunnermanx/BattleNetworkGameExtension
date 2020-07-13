@@ -20,7 +20,7 @@ public class UserJoinRoomHandler extends BaseServerEventHandler {
 			ext.Game().CreatePlayer(user);
 			
 			if (ext.getParentRoom().getSize().getUserCount() == 2) {
-				ext.StartGame();
+				ext.PlayersPresent();
 			}
 		}	
 	}

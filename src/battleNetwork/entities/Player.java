@@ -12,4 +12,6 @@ public class Player {
 		this.energy = 0;
 		this.owner = owner;
 	}
+	
+	
 }

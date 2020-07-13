@@ -5,11 +5,12 @@ import java.util.LinkedList;
 
 
 import battleNetwork.BattleNetworkExtension;
+import battleNetwork.entities.Unit.UnitDamagedListener;
 import battleNetwork.entities.Projectiles.Projectile;
 import battleNetwork.entities.Projectiles.ProjectileFactory;
 import net.sf.json.JSONObject;
 
-public class Arena {
+public class Arena implements UnitDamagedListener {
 	private static final int ARENA_WIDTH = 3;
 	private static final int ARENA_LENGTH = 6;
 	
@@ -61,9 +62,19 @@ public class Arena {
 	
 	public void LoadPlayerUnitData() {
 		p1PlayerUnit = SpawnPlayerUnit(Arena.Ownership.PLAYER1, "pu1", 0, 1);
+		p1PlayerUnit.Register(this);
 		p2PlayerUnit = SpawnPlayerUnit(Arena.Ownership.PLAYER2, "pu2", 5, 1);
+		p2PlayerUnit.Register(this);
 	}
 	
+	@Override
+	public void OnUnitDamaged(int unitId, int damage, int currentHitpoints) {
+		if (unitId == P1_PLAYERUNIT_ID && currentHitpoints <= 0) {
+			this.ext.Player2Victory();
+		} else if (unitId == P2_PLAYERUNIT_ID && currentHitpoints <= 0) {
+			this.ext.Player1Victory();
+		}		
+	}
 	
 	public Unit SpawnPlayerUnit(Arena.Ownership owner, String type, int posX, int posY) {		
 		// TEMPORARY
@@ -150,11 +161,11 @@ public class Arena {
 					
 					this.ext.trace("hit!");
 					//this.ext.trace(String.format("  Hit with projectile %d!", p.toString()));
-															
-					u.hitpoints -= p.damage;					
+											
+					u.Damage(p.damage);
 					ext.QueueDamageDealt(u.id, p.damage);
 					
-					if (u.hitpoints <= 0) {						
+					if (u.CurrentHP() <= 0) {						
 						unitIter.remove();					
 						// TODO, if this is a player unit we need to trigger some game ending logic
 					}
@@ -202,7 +213,7 @@ public class Arena {
 		}
 		
 		if (target != null) {
-			target.hitpoints = target.hitpoints - basicAttackDmg;
+			target.Damage(basicAttackDmg);
 		}
 				
 		return new BasicAttackResult(target, basicAttackDmg);
@@ -259,6 +270,7 @@ public class Arena {
 		return arena[x][y].owner == owner && 
 				arena[x][y].state == Tile.State.EMPTY;
 	}
+	
 	
 	
 	public enum Ownership {

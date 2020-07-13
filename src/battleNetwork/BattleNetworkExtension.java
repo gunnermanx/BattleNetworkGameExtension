@@ -30,6 +30,7 @@ import battleNetwork.eventHandlers.UserJoinRoomHandler;
 public class BattleNetworkExtension extends SFSExtension {
 	
 	private static final String CMD_UPDATE = "tick";
+	private static final String PLAYER_VICTORY = "pv";
 
 	
 	public ArrayList<LinkedList<Command>> commands;
@@ -44,27 +45,27 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	private GameData gameData;
 	
+	private GameTicker ticker;
+	
 	@Override
 	public void init() {
 		trace("BattleNetworkExtension started");
 				
 		gameData = new GameData(this);		
 		
-		// TODO Send data about each player, maybe basic unit data?
-		
+		// TODO Send data about each player, maybe basic unit data?payload		
 		game = new BattleNetworkGame(this);
 		
 		commands = new ArrayList<LinkedList<Command>>();
-
 		
 		addEventHandler(SFSEventType.USER_JOIN_ROOM, UserJoinRoomHandler.class);
 		
 		addRequestHandler("m", MovementHandler.class);
 		addRequestHandler("ba", BasicAttackHandler.class);
-		addRequestHandler("ch", ChipPlayedHandler.class);
-		
-		// Try to wait for both players to say they are ready or wait for a set time
-		// before starting the game
+		addRequestHandler("ch", ChipPlayedHandler.class);				
+	}
+	
+	public void PlayersPresent() {
 		this.getApi().getSystemScheduler().schedule(new Runnable() {
 			@Override
 			public void run() {
@@ -74,9 +75,9 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	public void StartGame() {
-		if (!gameStarted) {
+		if (!gameStarted && ticker == null) {
 			// start the game ticker
-			GameTicker.Start(this);
+			ticker = GameTicker.Start(this);
 			gameStarted = true;
 		}		
 	}
@@ -92,6 +93,16 @@ public class BattleNetworkExtension extends SFSExtension {
 	public GameData GameData() {
 		return gameData;
 	}
+	
+	public void Player1Victory() {
+		gameStarted = false;
+		QueuePlayerVictory(1);
+	}
+	
+	public void Player2Victory() {
+		gameStarted = false;
+		QueuePlayerVictory(2);
+	}	
 	
 	public void OnGameTick(int current) {
 		//trace("tick ", current);
@@ -130,6 +141,12 @@ public class BattleNetworkExtension extends SFSExtension {
 		return payload;
 	}
 	
+	public void QueuePlayerVictory(int playerId) {
+		ticker.Stop();
+		SFSObject payload = new SFSObject();
+		payload.putInt("pid", playerId);
+		this.send(PLAYER_VICTORY, payload, this.getParentRoom().getPlayersList());
+	}
 	
 	public void QueueEnergyChanged(int playerId, int delta) {
 		Command e = new EnergyChangedCommand(playerId, delta);
