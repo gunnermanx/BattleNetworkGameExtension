@@ -19,8 +19,13 @@ import net.sf.json.JSONObject;
 // BattleNetworkGame and they should be modified through this class
 public class BattleNetworkGame {
 	
-	private static final int TICKS_PER_ENERGY = 10;
-	
+	// 50ms tick time => 20hz game ticker
+	public static final int INTERVAL_MS = 50;
+	// Energy is gained at a rate of 1 second
+	private static final int MILLISECONDS_PER_ENERGY = 2000;
+	// ticks per energy is naturally = MILLISECONDS_PER_ENERGY / INTERVAL_MS
+	public static final int TICKS_PER_ENERGY = MILLISECONDS_PER_ENERGY / INTERVAL_MS;
+		
 	public Player player1;
 	public Player player2;	
 	

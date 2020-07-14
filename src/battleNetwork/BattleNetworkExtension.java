@@ -53,7 +53,7 @@ public class BattleNetworkExtension extends SFSExtension {
 				
 		gameData = new GameData(this);		
 		
-		// TODO Send data about each player, maybe basic unit data?payload		
+		// TODO Send data about each player, maybe basic unit data? payload		
 		game = new BattleNetworkGame(this);
 		
 		commands = new ArrayList<LinkedList<Command>>();
@@ -62,7 +62,8 @@ public class BattleNetworkExtension extends SFSExtension {
 		
 		addRequestHandler("m", MovementHandler.class);
 		addRequestHandler("ba", BasicAttackHandler.class);
-		addRequestHandler("ch", ChipPlayedHandler.class);				
+		addRequestHandler("ch", ChipPlayedHandler.class);
+		
 	}
 	
 	public void PlayersPresent() {

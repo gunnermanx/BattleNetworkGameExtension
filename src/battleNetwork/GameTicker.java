@@ -3,9 +3,7 @@ package battleNetwork;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class GameTicker implements Runnable {	
-	private static final int INITIAL_DELAY_MS = 0; 
-	private static final int INTERVAL_MS = 50;
+public class GameTicker implements Runnable {
 	
 	private static GameTicker ticker = null;	
 	private BattleNetworkExtension ext;
@@ -19,8 +17,8 @@ public class GameTicker implements Runnable {
 			ticker = new GameTicker(ext);
 			ticker.taskHandle = ext.getApi().getSystemScheduler().scheduleAtFixedRate(
 				ticker, 
-				INITIAL_DELAY_MS, 
-				INTERVAL_MS, 
+				0, 
+				BattleNetworkGame.INTERVAL_MS, 
 				TimeUnit.MILLISECONDS
 			);			
 		}
