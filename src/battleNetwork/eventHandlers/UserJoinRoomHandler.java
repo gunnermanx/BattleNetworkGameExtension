@@ -15,11 +15,18 @@ public class UserJoinRoomHandler extends BaseServerEventHandler {
 		BattleNetworkExtension ext = (BattleNetworkExtension) getParentExtension();		
 		User user = (User) event.getParameter(SFSEventParam.USER);
 		
+		ext.trace("player joining room");
+		
 		if (user.isPlayer() && !ext.IsGameStarted()) {
+			
+			ext.trace("1111");
 			
 			ext.Game().CreatePlayer(user);
 			
 			if (ext.getParentRoom().getSize().getUserCount() == 2) {
+				
+				ext.trace("2222");
+				
 				ext.PlayersPresent();
 			}
 		}	

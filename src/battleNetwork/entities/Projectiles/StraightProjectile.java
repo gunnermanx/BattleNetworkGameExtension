@@ -16,9 +16,7 @@ public class StraightProjectile extends Projectile {
 			} else if (owner == Arena.Ownership.PLAYER2) {
 				this.posX--;
 			}
-			progress = 0;
-			
-			
+			progress = 0;			
 		}
 	}
 }

@@ -45,19 +45,27 @@ public class BattleNetworkGame {
 		// i dont think this would actually work quite as expected 
 		// if you are at 10, you are capped, and may spend at any tick that is not % TICKS_PER_ENERGY...
 		// but maybe thats too complex
-		if (currentTick > 0 && (currentTick % TICKS_PER_ENERGY == 0)) {
+		if (currentTick > 0 && (currentTick % TICKS_PER_ENERGY == 0)) {			
 			
-			//this.ext.trace("tick up for energy!");
+			if (player1 == null) {
+				this.ext.Error("Player1 object is null!");
+				return;
+			}
+			if (player2 == null) {
+				this.ext.Error("Player2 object is null!");
+				return;
+			}
 			
-			if (player1 != null && player1.energy < 10) {
+			if (player1.energy < 10) {
 				player1.energy ++;
 				this.ext.QueueEnergyChanged(1, 1);
 			}
-			if (player2 != null && player2.energy < 10) {
+			if (player2.energy < 10) {
 				player2.energy ++;
 				this.ext.QueueEnergyChanged(2, 1);
 			}			
 		}
+		
 		
 		arena.TickProjectiles();
 	}
@@ -65,6 +73,9 @@ public class BattleNetworkGame {
 	public void CreatePlayer(User user) {
 		// TODO see if there are reconnection issues
 		int id = user.getPlayerId();
+		
+		this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
+		
 		if (id == 1) {
 			if (player1 == null) {
 				player1 = new Player(user, Arena.Ownership.PLAYER1);

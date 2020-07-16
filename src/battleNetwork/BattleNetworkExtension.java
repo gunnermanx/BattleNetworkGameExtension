@@ -3,6 +3,7 @@ package battleNetwork;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import com.smartfoxserver.v2.core.SFSEventType;
@@ -33,7 +34,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	private static final String PLAYER_VICTORY = "pv";
 
 	
-	public ArrayList<LinkedList<Command>> commands;
+	public ArrayList<CopyOnWriteArrayList<Command>> commands;
 
 	private int lastTick = 0;
 	private int currentTick = 0;
@@ -56,14 +57,13 @@ public class BattleNetworkExtension extends SFSExtension {
 		// TODO Send data about each player, maybe basic unit data? payload		
 		game = new BattleNetworkGame(this);
 		
-		commands = new ArrayList<LinkedList<Command>>();
+		commands = new ArrayList<CopyOnWriteArrayList<Command>>();
 		
 		addEventHandler(SFSEventType.USER_JOIN_ROOM, UserJoinRoomHandler.class);
 		
 		addRequestHandler("m", MovementHandler.class);
 		addRequestHandler("ba", BasicAttackHandler.class);
 		addRequestHandler("ch", ChipPlayedHandler.class);
-		
 	}
 	
 	public void PlayersPresent() {
@@ -103,14 +103,22 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void Player2Victory() {
 		gameStarted = false;
 		QueuePlayerVictory(2);
-	}	
+	}
+	
+	
+	
+	public void Error(String err) {
+		this.trace(String.format("Error happend: %s", err));
+		// stop the game?
+	}
+	
 	
 	public void OnGameTick(int current) {
 		//trace("tick ", current);
 		currentTick = current;
 		
 		// Add a new command LinkedList for this tick
-		commands.add(current, new LinkedList<Command>());
+		commands.add(current, new CopyOnWriteArrayList<Command>());
 		
 		// Let the game know a new tick occurred
 		game.HandleTick(current);
@@ -130,7 +138,7 @@ public class BattleNetworkExtension extends SFSExtension {
 		// encapsulate all commands into payload
 		SFSArray sfsArr = new SFSArray();
 		for (int i = startingTick; i < endingTick; i++) {
-			LinkedList<Command> cList = commands.get(i);
+			CopyOnWriteArrayList<Command> cList = commands.get(i);
 			Iterator<Command> it = cList.iterator();
 			while (it.hasNext()) {
 				Command c = it.next();
@@ -150,23 +158,32 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	public void QueueEnergyChanged(int playerId, int delta) {
-		Command e = new EnergyChangedCommand(playerId, delta);
-		commands.get(currentTick).add(e);
+		Command e = new EnergyChangedCommand(playerId, delta);		
+		QueueCommand(e);
 	}
 	
 	public void QueueMoveStateChange(int id, int x, int y) {
 		Command m = new MoveCommand(id, x, y);
-		commands.get(currentTick).add(m);
+		QueueCommand(m);
 	}
 	
 	public void QueueDamageDealt(int id, int damage) {
 		Command dd = new DamageDealtCommand(id, damage);
-		commands.get(currentTick).add(dd);	
+		QueueCommand(dd);
 	}
 	
 	public void QueueSpawnProjectile(int playerId, int cid) {
 		Command sp = new SpawnProjectileCommand(playerId, cid);
-		commands.get(currentTick).add(sp);
+		QueueCommand(sp);
+	}
+	
+	private void QueueCommand(Command c) {
+		CopyOnWriteArrayList<Command> tickCommandList = commands.get(currentTick);
+		if (tickCommandList != null) {
+			tickCommandList.add(c);
+		} else {
+			this.trace(String.format("Failed to queue command because tick command list is null!"));
+		}
 	}
 	
 }

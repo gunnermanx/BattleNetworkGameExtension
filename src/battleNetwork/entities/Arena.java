@@ -2,7 +2,7 @@ package battleNetwork.entities;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import battleNetwork.BattleNetworkExtension;
 import battleNetwork.entities.Unit.UnitDamagedListener;
@@ -24,10 +24,10 @@ public class Arena implements UnitDamagedListener {
 	
 	// units should be split into two LinkedLists
 	// easier to track projectile hits
-	private LinkedList<Unit> p1Units;
-	private LinkedList<Unit> p2Units;
+	private CopyOnWriteArrayList<Unit> p1Units;
+	private CopyOnWriteArrayList<Unit> p2Units;
 	
-	private LinkedList<Projectile> projectiles;
+	private CopyOnWriteArrayList<Projectile> projectiles;
 	
 	
 	private Unit p1PlayerUnit;
@@ -38,9 +38,9 @@ public class Arena implements UnitDamagedListener {
 	
 	public Arena(BattleNetworkExtension ext) {
 		arena = new Tile[ARENA_LENGTH][ARENA_WIDTH];
-		p1Units = new LinkedList<Unit>();
-		p2Units = new LinkedList<Unit>();
-		projectiles = new LinkedList<Projectile>();
+		p1Units = new CopyOnWriteArrayList<Unit>();
+		p2Units = new CopyOnWriteArrayList<Unit>();
+		projectiles = new CopyOnWriteArrayList<Projectile>();
 		
 		this.ext = ext;
 	}
@@ -134,16 +134,22 @@ public class Arena implements UnitDamagedListener {
 		// Advance each projectile
 		Iterator<Projectile> projectileIter = projectiles.iterator();
 		while (projectileIter.hasNext()) {
-			// Advance the projectile
 			Projectile p = projectileIter.next();
-			p.Advance();
 			
+			// Sanity check
+			if (p == null) {
+				this.ext.trace("projectile in array was null?!");
+				projectileIter.remove();
+				continue;
+			}
+			
+			p.Advance();
+						
 			//this.ext.trace(String.format("Advancing projectile [%d, %d]", p.posX,  p.posY));
 			
 			// check if the projectile hit anything
-			// not going to be that costly, since there wont be that many projectiles / units
-			
-			LinkedList<Unit> units;			
+			// not going to be that costly, since there wont be that many projectiles / units			
+			CopyOnWriteArrayList<Unit> units;			
 			if (p.owner == Arena.Ownership.PLAYER1) {
 				units = p2Units;
 			} else {
@@ -154,9 +160,15 @@ public class Arena implements UnitDamagedListener {
 			while (unitIter.hasNext()) {
 				Unit u = unitIter.next();
 				
+				if (u == null) {
+					this.ext.trace("unit in array was null?!");
+					unitIter.remove();
+					continue;
+				}
+				
 				//this.ext.trace(String.format("Unit at [%d, %d]", u.posX,  u.posY));
 				
-				// HIT!
+				// Check for a hit
 				if (u.posX == p.posX && u.posY == p.posY) {	
 					
 					this.ext.trace("hit!");
@@ -174,6 +186,7 @@ public class Arena implements UnitDamagedListener {
 					projectileIter.remove();					
 					break;
 				}
+				// Check for out of bounds
 				else if (p.posX >= ARENA_LENGTH || p.posX < 0 || p.posY >= ARENA_WIDTH || p.posY < 0) {
 					projectileIter.remove();
 					break;
