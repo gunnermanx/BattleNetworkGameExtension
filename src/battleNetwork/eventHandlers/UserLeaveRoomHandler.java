@@ -2,29 +2,32 @@ package battleNetwork.eventHandlers;
 
 import com.smartfoxserver.v2.core.ISFSEvent;
 import com.smartfoxserver.v2.core.SFSEventParam;
+import com.smartfoxserver.v2.entities.Room;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.exceptions.SFSException;
 import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
 import battleNetwork.BattleNetworkExtension;
 
-public class UserJoinRoomHandler extends BaseServerEventHandler {
+public class UserLeaveRoomHandler extends BaseServerEventHandler {
 
 	@Override
 	public void handleServerEvent(ISFSEvent event) throws SFSException {
 		BattleNetworkExtension ext = (BattleNetworkExtension) getParentExtension();		
 		User user = (User) event.getParameter(SFSEventParam.USER);
 		
-		ext.trace("player joining room");
+		Room room = (Room) event.getParameter(SFSEventParam.ROOM);
 		
-		if (user.isPlayer() && !ext.IsGameStarted()) {
-			ext.Game().CreatePlayer(user);
+		int userCount = ext.getParentRoom().getSize().getUserCount();
+		
+		ext.trace("player leaving room, %d users remain", userCount);		
+		// TODO
+		if (userCount == 0) {			
+			//ext.PlayersPresent();
+			//room.destroy();
+			ext.getApi().leaveRoom(user, user.getLastJoinedRoom());
 			
-			if (ext.getParentRoom().getPlayersList().size() == 2) {	
-				ext.trace("Calling PlayersPresent");
-				ext.PlayersPresent();
-			}
-		}	
+		}		
 	}
 
 }

@@ -56,14 +56,18 @@ public class BattleNetworkGame {
 				return;
 			}
 			
+			
+			
+			
 			if (player1.energy < 10) {
 				player1.energy ++;
-				this.ext.QueueEnergyChanged(1, 1);
+				this.ext.QueueEnergyChanged(currentTick, 1, 1);
 			}
+			
 			if (player2.energy < 10) {
 				player2.energy ++;
-				this.ext.QueueEnergyChanged(2, 1);
-			}			
+				this.ext.QueueEnergyChanged(currentTick, 2, 1);
+			}
 		}
 		
 		
@@ -119,7 +123,7 @@ public class BattleNetworkGame {
 			return;
 		}
 		player.energy -= chipCost;
-		this.ext.QueueEnergyChanged(playerId, -chipCost);
+		this.ext.QueueEnergyChanged(0, playerId, -chipCost);
 		
 		// For each projectile listed, we want to spawn it
 		JSONArray projectiles = chipJson.getJSONArray(GameData.ChipDataKeys.PROJECTILES);

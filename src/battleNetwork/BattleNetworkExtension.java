@@ -1,9 +1,11 @@
 package battleNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.smartfoxserver.v2.core.SFSEventType;
@@ -20,6 +22,7 @@ import battleNetwork.commands.EnergyChangedCommand;
 import battleNetwork.commands.MoveCommand;
 import battleNetwork.commands.SpawnProjectileCommand;
 import battleNetwork.eventHandlers.UserJoinRoomHandler;
+import battleNetwork.eventHandlers.UserLeaveRoomHandler;
 
 // The game extension
 // responsible for:
@@ -30,15 +33,37 @@ import battleNetwork.eventHandlers.UserJoinRoomHandler;
 // TODO: a command to replay commands for a certain player
 public class BattleNetworkExtension extends SFSExtension {
 	
+	private class GameTicker implements Runnable {
+		
+		private BattleNetworkExtension ext;
+		private int count = 0;
+				
+		public GameTicker(BattleNetworkExtension ext) {
+			this.ext = ext;			
+		}
+			
+		@Override
+		public void run() {
+			count++;
+			//ext.trace(String.format("count: %d", count));
+			ext.OnGameTick();			
+		}
+	}
+	
+	
+	
+	
 	private static final String CMD_UPDATE = "tick";
 	private static final String PLAYER_VICTORY = "pv";
 
 	
 	public ArrayList<CopyOnWriteArrayList<Command>> commands;
 
-	private int lastTick = 0;
+	private int lastUpdatedTick = 0;
 	private int currentTick = 0;
 	private static final int TICK_BUFFER_SIZE = 2;
+	
+	private final Object gameTickLock = new Object();
 	
 	
 	private boolean gameStarted;	
@@ -46,7 +71,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	private GameData gameData;
 	
-	private GameTicker ticker;
+	private ScheduledFuture<?> tickerTaskHandle;
 	
 	@Override
 	public void init() {
@@ -60,27 +85,53 @@ public class BattleNetworkExtension extends SFSExtension {
 		commands = new ArrayList<CopyOnWriteArrayList<Command>>();
 		
 		addEventHandler(SFSEventType.USER_JOIN_ROOM, UserJoinRoomHandler.class);
+		// TODO handle disconnects and leaves
+		addEventHandler(SFSEventType.USER_DISCONNECT, UserLeaveRoomHandler.class);
 		
 		addRequestHandler("m", MovementHandler.class);
 		addRequestHandler("ba", BasicAttackHandler.class);
 		addRequestHandler("ch", ChipPlayedHandler.class);
 	}
 	
+	@Override
+    public void destroy() {
+        super.destroy(); 
+        if (tickerTaskHandle != null) {
+        	tickerTaskHandle.cancel(true);
+        }
+    }
+	
 	public void PlayersPresent() {
-		this.getApi().getSystemScheduler().schedule(new Runnable() {
-			@Override
-			public void run() {
-				StartGame();
-			}
-		}, 2, TimeUnit.SECONDS);
+//		this.getApi().getSystemScheduler().schedule(new Runnable() {
+//			@Override
+//			public void run() {
+//				StartGame();
+//			}
+//		}, 2, TimeUnit.SECONDS);
+		StartGame();
 	}
 	
 	public void StartGame() {
-		if (!gameStarted && ticker == null) {
-			// start the game ticker
-			ticker = GameTicker.Start(this);
-			gameStarted = true;
-		}		
+		synchronized(this) {
+			if (!gameStarted && tickerTaskHandle == null) {
+				// start the game ticker
+				
+				// initializing the commands list
+				this.trace("INIT THE COMMANDS AT 0 ");
+				commands.add(currentTick, new CopyOnWriteArrayList<Command>());
+
+				this.trace("STARTING THE TICKER /// STARTING THE TICKER ");
+				
+				tickerTaskHandle = this.getApi().getSystemScheduler().scheduleAtFixedRate(
+					new GameTicker(this), 
+					0, 
+					BattleNetworkGame.INTERVAL_MS, 
+					TimeUnit.MILLISECONDS
+				);
+							
+				gameStarted = true;
+			}
+		}
 	}
 	
 	public boolean IsGameStarted() {
@@ -113,51 +164,75 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	
-	public void OnGameTick(int current) {
-		//trace("tick ", current);
-		currentTick = current;
-		
-		// Add a new command LinkedList for this tick
-		commands.add(current, new CopyOnWriteArrayList<Command>());
-		
-		// Let the game know a new tick occurred
-		game.HandleTick(current);
+	public void OnGameTick() {
+		synchronized(this) {
+			
+			// Add a new command LinkedList for this tick
+			//commands.add(currentTick, new CopyOnWriteArrayList<Command>());
+			
+			// Let the game know a new tick occurred
+//			this.trace("calling handleTick with tick");
+			
+			
+			
+			game.HandleTick(currentTick);
+					
+			// send out queued commands
+			if (currentTick == lastUpdatedTick + TICK_BUFFER_SIZE) {
 				
-		// send out queued commands
-		if (currentTick == lastTick + TICK_BUFFER_SIZE) {
-			SFSObject payload = CreateUpdatePayload(lastTick, currentTick);
-			this.send(CMD_UPDATE, payload, this.getParentRoom().getPlayersList());
-			lastTick = currentTick;
-		}
+						
+				SFSObject payload = CreateUpdatePayload(lastUpdatedTick, currentTick);
+				lastUpdatedTick = currentTick; // FUCKKK				
+				
+				
+				//this.trace(String.format("sending tick: %d => p1 %s, p2: %s", currentTick, game.player1.user.getName(), game.player2.user.getName()));
+				this.send(CMD_UPDATE, payload, Arrays.asList(game.player1.user, game.player2.user));
+				
+				
+				//this.send(CMD_UPDATE, payload, this.getParentRoom().getPlayersList());
+			}
+			
+			currentTick++;
+			commands.add(currentTick, new CopyOnWriteArrayList<Command>());
+		}		
 	}
 
 	private SFSObject CreateUpdatePayload(int startingTick, int endingTick) {
 		SFSObject payload = new SFSObject();
 		payload.putInt("t", endingTick);
 
+		//this.trace(String.format("CreateUpdatePayload startingTick: %d, endingTick: %d", startingTick, endingTick));
+		
 		// encapsulate all commands into payload
 		SFSArray sfsArr = new SFSArray();
 		for (int i = startingTick; i < endingTick; i++) {
+			
+			//this.trace(String.format("    startingTick: %d, endingTick: %d, i %d", startingTick, endingTick, i));
+			
 			CopyOnWriteArrayList<Command> cList = commands.get(i);
 			Iterator<Command> it = cList.iterator();
 			while (it.hasNext()) {
+				//this.trace("        while it.hasNext iteration");
+				
 				Command c = it.next();
 				// serialize
 				sfsArr.addSFSArray(c.Serialize());
 			}
-		}
+		}		
 		payload.putSFSArray("c", sfsArr);
 		return payload;
 	}
 	
 	public void QueuePlayerVictory(int playerId) {
-		ticker.Stop();
+		// TODO
+		tickerTaskHandle.cancel(true);
 		SFSObject payload = new SFSObject();
-		payload.putInt("pid", playerId);
-		this.send(PLAYER_VICTORY, payload, this.getParentRoom().getPlayersList());
+		payload.putInt("pid", playerId);		
+		this.send(PLAYER_VICTORY, payload, Arrays.asList(game.player1.user, game.player2.user));
 	}
 	
-	public void QueueEnergyChanged(int playerId, int delta) {
+	public void QueueEnergyChanged(int currentTick, int playerId, int delta) {
+		this.trace(String.format("energy changed for player %d, delta: %d at TICK: %d", playerId, delta, currentTick));
 		Command e = new EnergyChangedCommand(playerId, delta);		
 		QueueCommand(e);
 	}
