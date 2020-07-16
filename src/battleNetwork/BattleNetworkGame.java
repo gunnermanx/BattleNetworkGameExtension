@@ -69,8 +69,7 @@ public class BattleNetworkGame {
 				this.ext.QueueEnergyChanged(currentTick, 2, 1);
 			}
 		}
-		
-		
+				
 		arena.TickProjectiles();
 	}
 	

@@ -2,6 +2,7 @@ package battleNetwork.entities;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import battleNetwork.BattleNetworkExtension;
@@ -131,7 +132,9 @@ public class Arena implements UnitDamagedListener {
 	}
 	
 	public void TickProjectiles() {
+		
 		// Advance each projectile
+		ArrayList<Projectile> projectilesToRemove = new ArrayList<Projectile>();		
 		Iterator<Projectile> projectileIter = projectiles.iterator();
 		while (projectileIter.hasNext()) {
 			Projectile p = projectileIter.next();
@@ -139,7 +142,7 @@ public class Arena implements UnitDamagedListener {
 			// Sanity check
 			if (p == null) {
 				this.ext.trace("projectile in array was null?!");
-				projectileIter.remove();
+				projectilesToRemove.add(p);
 				continue;
 			}
 			
@@ -156,13 +159,14 @@ public class Arena implements UnitDamagedListener {
 				units = p1Units;
 			}
 			
+			ArrayList<Unit> unitsToRemove = new ArrayList<Unit>();
 			Iterator<Unit> unitIter = units.iterator();
 			while (unitIter.hasNext()) {
 				Unit u = unitIter.next();
 				
 				if (u == null) {
 					this.ext.trace("unit in array was null?!");
-					unitIter.remove();
+					unitsToRemove.add(u);
 					continue;
 				}
 				
@@ -178,21 +182,29 @@ public class Arena implements UnitDamagedListener {
 					ext.QueueDamageDealt(u.id, p.damage);
 					
 					if (u.CurrentHP() <= 0) {						
-						unitIter.remove();					
+						unitsToRemove.add(u);			
 						// TODO, if this is a player unit we need to trigger some game ending logic
 					}
 					
 					// remove projectile
-					projectileIter.remove();					
+					projectilesToRemove.add(p);
+					
 					break;
 				}
 				// Check for out of bounds
 				else if (p.posX >= ARENA_LENGTH || p.posX < 0 || p.posY >= ARENA_WIDTH || p.posY < 0) {
-					projectileIter.remove();
+					projectilesToRemove.add(p);
 					break;
 				}
 			}
-		}		
+			
+			// Remove all units that were marked for removal
+			units.removeAll(unitsToRemove);
+		}
+		
+		// Remove all projectiles that were marked for removal
+		projectiles.removeAll(projectilesToRemove);
+		
 	}
 	
 	public BasicAttackResult BasicAttackFromPlayerUnit(int playerId) {
