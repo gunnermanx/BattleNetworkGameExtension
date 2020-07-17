@@ -171,7 +171,7 @@ public class BattleNetworkExtension extends SFSExtension {
 			//commands.add(currentTick, new CopyOnWriteArrayList<Command>());
 			
 			// Let the game know a new tick occurred
-//			this.trace("calling handleTick with tick");
+			//this.trace("calling handleTick with tick");
 			
 			
 			

@@ -18,16 +18,20 @@ public class UserLeaveRoomHandler extends BaseServerEventHandler {
 		
 		Room room = (Room) event.getParameter(SFSEventParam.ROOM);
 		
-		int userCount = ext.getParentRoom().getSize().getUserCount();
+		int userCount = ext.getParentRoom().getPlayersList().size();
 		
 		ext.trace("player leaving room, %d users remain", userCount);		
 		// TODO
-		if (userCount == 0) {			
-			//ext.PlayersPresent();
-			//room.destroy();
-			ext.getApi().leaveRoom(user, user.getLastJoinedRoom());
-			
-		}		
+		
+		
+		//ext.getApi().leaveRoom(user, user.getLastJoinedRoom());
+		
+//		if (userCount == 0) {			
+//			//ext.PlayersPresent();
+//			//room.destroy();
+//			
+//			
+//		}		
 	}
 
 }
