@@ -109,8 +109,6 @@ public class BattleNetworkGame {
 	
 	
 	public void PlayerBasicAttack(int playerId) {
-		// TODO 
-		int damage = 1;
 		arena.BasicAttackFromPlayerUnit(playerId);
 		
 	}

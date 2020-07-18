@@ -3,7 +3,6 @@ package battleNetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +35,6 @@ public class BattleNetworkExtension extends SFSExtension {
 	private class GameTicker implements Runnable {
 		
 		private BattleNetworkExtension ext;
-		private int count = 0;
 				
 		public GameTicker(BattleNetworkExtension ext) {
 			this.ext = ext;			
@@ -44,14 +42,9 @@ public class BattleNetworkExtension extends SFSExtension {
 			
 		@Override
 		public void run() {
-			count++;
-			//ext.trace(String.format("count: %d", count));
 			ext.OnGameTick();			
 		}
 	}
-	
-	
-	
 	
 	private static final String CMD_UPDATE = "tick";
 	private static final String PLAYER_VICTORY = "pv";
@@ -62,9 +55,6 @@ public class BattleNetworkExtension extends SFSExtension {
 	private int lastUpdatedTick = 0;
 	private int currentTick = 0;
 	private static final int TICK_BUFFER_SIZE = 1;
-	
-	private final Object gameTickLock = new Object();
-	
 	
 	private boolean gameStarted;	
 	private BattleNetworkGame game;

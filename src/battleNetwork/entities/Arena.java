@@ -1,7 +1,6 @@
 package battleNetwork.entities;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
