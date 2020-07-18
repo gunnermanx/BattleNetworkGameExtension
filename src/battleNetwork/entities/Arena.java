@@ -24,11 +24,7 @@ public class Arena implements UnitDamagedListener {
 	private Unit[][] units;	
 
 	private CopyOnWriteArrayList<Projectile> projectiles;
-	
-	
-	private Unit p1PlayerUnit;
-	private Unit p2PlayerUnit;
-	
+		
 	
 	private BattleNetworkExtension ext;
 	
@@ -64,12 +60,6 @@ public class Arena implements UnitDamagedListener {
 		}		
 	}
 	
-	public void LoadPlayerUnitData() {
-		p1PlayerUnit = SpawnPlayerUnit(Arena.Ownership.PLAYER1, "pu1", 0, 1);
-		p1PlayerUnit.Register(this);
-		p2PlayerUnit = SpawnPlayerUnit(Arena.Ownership.PLAYER2, "pu2", 5, 1);
-		p2PlayerUnit.Register(this);
-	}
 	
 	@Override
 	public void OnUnitDamaged(int unitId, int damage, int currentHitpoints) {
@@ -113,22 +103,11 @@ public class Arena implements UnitDamagedListener {
 		return u;
 	}
 	
-	public void SpawnProjectile(Arena.Ownership owner, int pid) {
+	public void SpawnProjectile(Player player, int pid) {
 		// based on the pid, we want to spawn a type of Projectile
-		JSONObject projectileJson = this.ext.GameData().GetProjectileData(pid);
+		JSONObject projectileJson = this.ext.GameData().GetProjectileData(pid);				
 		
-		// Clean this up later... just ugly
-		int x = 0; 
-		int y = 0;
-		if (owner == Arena.Ownership.PLAYER1) {
-			x = p1PlayerUnit.posX;
-			y = p1PlayerUnit.posY;
-		} else if (owner == Arena.Ownership.PLAYER2) {
-			x = p2PlayerUnit.posX;
-			y = p2PlayerUnit.posY;
-		}				
-		
-		Projectile p = ProjectileFactory.getProjectile(owner, projectileJson, x, y);		
+		Projectile p = ProjectileFactory.getProjectile(player.owner, projectileJson, player.unit.posX, player.unit.posY);		
 		if (p != null) {
 			projectiles.add(p);
 		} else {
@@ -187,17 +166,11 @@ public class Arena implements UnitDamagedListener {
 		
 	}
 	
-	public void BasicAttackFromPlayerUnit(int playerId) {
+	public void BasicAttackFromPlayerUnit(Player player) {
 		// later data about the attack should have been loaded first
 		int basicAttackDmg = 1;
 		
-		Unit target = null;		
-		if (playerId == 1) {								
-			target = GetFirstEnemyUnitInRow(Ownership.PLAYER1, p1PlayerUnit.posX, p1PlayerUnit.posY);		
-		} else if (playerId == 2){
-			target = GetFirstEnemyUnitInRow(Ownership.PLAYER2, p2PlayerUnit.posX, p2PlayerUnit.posY);
-		}
-		
+		Unit target = GetFirstEnemyUnitInRow(player.owner, player.unit.posX, player.unit.posY);
 		DamageUnit(target, basicAttackDmg);		
 	}
 	
@@ -231,23 +204,16 @@ public class Arena implements UnitDamagedListener {
 		return null;
 	}
 	
-	public void MovePlayerUnit(int playerId, byte dir) {
-		Unit u;	
-		// TODO: sketchy
-		if (playerId == 1) {
-			u = p1PlayerUnit;
-		} else {
-			u = p2PlayerUnit;
-		}
-		
-		if (u != null) {
+	public void MovePlayerUnit(Player player, byte dir) {
+		if (player.unit != null) {
+			Unit u = player.unit;
 			switch(dir) {
 				case (byte)'u':
 					if (IsPathable(u.owner, u.posX, u.posY+1)) {
 						units[u.posX][u.posY] = null;
 						u.posY++;
 						units[u.posX][u.posY] = u;
-						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'d':
@@ -255,7 +221,7 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posY--;
 						units[u.posX][u.posY] = u;
-						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'l':
@@ -263,7 +229,7 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posX--;
 						units[u.posX][u.posY] = u;
-						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'r':
@@ -271,25 +237,14 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posX++;
 						units[u.posX][u.posY] = u;
-						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				default:
 					break;
 			}
 		}
-	}
-	
-	
-	public Unit GetPlayerUnit(Arena.Ownership owner) {
-		if (owner == Arena.Ownership.PLAYER1) {
-			return this.p1PlayerUnit;
-		} else if (owner == Arena.Ownership.PLAYER2) {
-			return this.p2PlayerUnit;
-		}
-		this.ext.trace("returning null player unit for owner that is none");
-		return null;
-	}
+	}	
 	
 	private boolean IsPathable(Arena.Ownership owner, int x, int y) {
 		if (x >= ARENA_LENGTH || x < 0 || y >= ARENA_WIDTH || y < 0) {

@@ -44,8 +44,7 @@ public class BattleNetworkGame {
 	public BattleNetworkGame(BattleNetworkExtension ext) {
 		this.ext = ext;
 		this.arena = new Arena(ext);
-		this.arena.LoadArenaData();
-		this.arena.LoadPlayerUnitData();
+		this.arena.LoadArenaData();		
 	}
 	
 	public void HandleTick(int currentTick) {		
@@ -99,22 +98,27 @@ public class BattleNetworkGame {
 		if (id == 1) {
 			if (player1 == null) {
 				player1 = new Player(id, user, Arena.Ownership.PLAYER1);
+				player1.unit = arena.SpawnPlayerUnit(Arena.Ownership.PLAYER1, "pu1", 0, 1);
+				player1.unit.Register(arena);
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
 				player2 = new Player(id, user, Arena.Ownership.PLAYER2);
+				player2.unit = arena.SpawnPlayerUnit(Arena.Ownership.PLAYER2, "pu2", 5, 1);
+				player2.unit.Register(arena);
 			}
 		}
+		
 	}	
 	
 	
 	public void PlayerBasicAttack(int playerId) {
-		arena.BasicAttackFromPlayerUnit(playerId);
+		arena.BasicAttackFromPlayerUnit(GetPlayer(playerId));
 		
 	}
 	
 	public void MovePlayer(int playerId, byte dir) {
-		arena.MovePlayerUnit(playerId, dir);		
+		arena.MovePlayerUnit(GetPlayer(playerId), dir);		
 	}
 	
 	public void PlayChip(int playerId, int cid) {		
@@ -134,7 +138,7 @@ public class BattleNetworkGame {
 		player.energy -= chipCost;
 		this.ext.QueueEnergyChanged(0, playerId, -chipCost);
 		
-		Unit playerUnit = arena.GetPlayerUnit(player.owner);
+		Unit playerUnit = GetPlayer(playerId).unit;
 		Chip chip = ChipFactory.getChip(this, cid, player, chipJson, playerUnit.posX, playerUnit.posY);
 		if (chip != null) {
 			activeChip = chip;
@@ -143,7 +147,7 @@ public class BattleNetworkGame {
 	}
 	
 	public void SpawnProjectile(Player player, int projectileID) {
-		this.arena.SpawnProjectile(player.owner, projectileID);
+		this.arena.SpawnProjectile(player, projectileID);
 		this.ext.QueueSpawnProjectile(player.id, projectileID);
 	}
 	

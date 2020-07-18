@@ -7,6 +7,7 @@ public class Player {
 	public User user;
 	public int energy = 0;
 	public Arena.Ownership owner;
+	public Unit unit;
 	
 	public Player(int id, User user, Arena.Ownership owner) {
 		this.id = id;
