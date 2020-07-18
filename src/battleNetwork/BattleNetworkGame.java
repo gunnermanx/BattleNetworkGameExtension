@@ -4,6 +4,9 @@ import com.smartfoxserver.v2.entities.User;
 
 import battleNetwork.entities.Arena;
 import battleNetwork.entities.Player;
+import battleNetwork.entities.Unit;
+import chips.Chip;
+import chips.ChipFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -32,6 +35,10 @@ public class BattleNetworkGame {
 	public Arena arena;
 	
 	private BattleNetworkExtension ext;
+	
+	private Chip activeChip;
+	
+	//private Chip
 	
 	
 	public BattleNetworkGame(BattleNetworkExtension ext) {
@@ -69,9 +76,19 @@ public class BattleNetworkGame {
 				this.ext.QueueEnergyChanged(currentTick, 2, 1);
 			}
 		}
-				
+		
+		// Advance any active chips
+		if (activeChip != null) {
+			activeChip.Advance();
+			if (activeChip.IsComplete()) {
+				activeChip = null;
+			}
+		}		
+		
+		// Ask the Arena to advance projectiles
 		arena.TickProjectiles();
 	}
+	
 	
 	public void CreatePlayer(User user) {
 		// TODO see if there are reconnection issues
@@ -81,11 +98,11 @@ public class BattleNetworkGame {
 		
 		if (id == 1) {
 			if (player1 == null) {
-				player1 = new Player(user, Arena.Ownership.PLAYER1);
+				player1 = new Player(id, user, Arena.Ownership.PLAYER1);
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
-				player2 = new Player(user, Arena.Ownership.PLAYER2);
+				player2 = new Player(id, user, Arena.Ownership.PLAYER2);
 			}
 		}
 	}	
@@ -109,8 +126,6 @@ public class BattleNetworkGame {
 		// we know cid is valid, already validated in the handler
 		JSONObject chipJson = ext.GameData().GetChipData(cid);
 		
-		this.ext.trace("play chip");	
-		
 		// Get the cost, validate and deduct
 		int chipCost = chipJson.getInt(GameData.ChipDataKeys.COST);
 		Player player = GetPlayer(playerId);
@@ -124,20 +139,18 @@ public class BattleNetworkGame {
 		player.energy -= chipCost;
 		this.ext.QueueEnergyChanged(0, playerId, -chipCost);
 		
-		// For each projectile listed, we want to spawn it
-		JSONArray projectiles = chipJson.getJSONArray(GameData.ChipDataKeys.PROJECTILES);
-		for (int i = 0; i < projectiles.size(); i++) {
-			JSONObject projectileJson = projectiles.getJSONObject(i);
-			int pid = projectileJson.getInt(GameData.ProjectileDataKeys.ID);
-			
-			// validate projectile id, in case of errors
-			if (ext.GameData().IsValidProjectileId(pid)) {			
-				this.arena.SpawnProjectile(player.owner, pid);
-				this.ext.QueueSpawnProjectile(playerId, pid);
-			}
-		}	
+		Unit playerUnit = arena.GetPlayerUnit(player.owner);
+		Chip chip = ChipFactory.getChip(this, cid, player, chipJson, playerUnit.posX, playerUnit.posY);
+		if (chip != null) {
+			activeChip = chip;
+			activeChip.Init();
+		}
 	}
 	
+	public void SpawnProjectile(Player player, int projectileID) {
+		this.arena.SpawnProjectile(player.owner, projectileID);
+		this.ext.QueueSpawnProjectile(player.id, projectileID);
+	}
 	
 	
 	private Player GetPlayer(int id) {

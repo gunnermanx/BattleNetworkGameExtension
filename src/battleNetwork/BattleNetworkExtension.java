@@ -102,13 +102,12 @@ public class BattleNetworkExtension extends SFSExtension {
     }
 	
 	public void PlayersPresent() {
-//		this.getApi().getSystemScheduler().schedule(new Runnable() {
-//			@Override
-//			public void run() {
-//				StartGame();
-//			}
-//		}, 2, TimeUnit.SECONDS);
-		StartGame();
+		this.getApi().getSystemScheduler().schedule(new Runnable() {
+			@Override
+			public void run() {
+				StartGame();
+			}
+		}, 2, TimeUnit.SECONDS);		
 	}
 	
 	public void StartGame() {
@@ -156,8 +155,7 @@ public class BattleNetworkExtension extends SFSExtension {
 		QueuePlayerVictory(2);
 	}
 	
-	
-	
+		
 	public void Error(String err) {
 		this.trace(String.format("Error happend: %s", err));
 		// stop the game?
@@ -166,32 +164,19 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	public void OnGameTick() {
 		synchronized(this) {
-			
-			// Add a new command LinkedList for this tick
-			//commands.add(currentTick, new CopyOnWriteArrayList<Command>());
-			
-			// Let the game know a new tick occurred
-			//this.trace("calling handleTick with tick");
-			
-			
-			
+			// Let the game sim the current tick
 			game.HandleTick(currentTick);
 					
-			// send out queued commands
+			// We want to buffer some commands
 			if (currentTick == lastUpdatedTick + TICK_BUFFER_SIZE) {
-				
-						
+				// create the payload for the tick update command that we send to the clients
 				SFSObject payload = CreateUpdatePayload(lastUpdatedTick, currentTick);
-				lastUpdatedTick = currentTick; // FUCKKK				
-				
-				
+				lastUpdatedTick = currentTick; // This needs to happen after we create the payload				
 				//this.trace(String.format("sending tick: %d => p1 %s, p2: %s", currentTick, game.player1.user.getName(), game.player2.user.getName()));
-				this.send(CMD_UPDATE, payload, Arrays.asList(game.player1.user, game.player2.user));
-				
-				
-				//this.send(CMD_UPDATE, payload, this.getParentRoom().getPlayersList());
+				this.send(CMD_UPDATE, payload, Arrays.asList(game.player1.user, game.player2.user));				
 			}
 			
+			// After sending out the commands, update the tick and create the command list
 			currentTick++;
 			commands.add(currentTick, new CopyOnWriteArrayList<Command>());
 		}		
@@ -200,20 +185,13 @@ public class BattleNetworkExtension extends SFSExtension {
 	private SFSObject CreateUpdatePayload(int startingTick, int endingTick) {
 		SFSObject payload = new SFSObject();
 		payload.putInt("t", endingTick);
-
-		//this.trace(String.format("CreateUpdatePayload startingTick: %d, endingTick: %d", startingTick, endingTick));
 		
 		// encapsulate all commands into payload
 		SFSArray sfsArr = new SFSArray();
-		for (int i = startingTick; i < endingTick; i++) {
-			
-			//this.trace(String.format("    startingTick: %d, endingTick: %d, i %d", startingTick, endingTick, i));
-			
+		for (int i = startingTick; i < endingTick; i++) {		
 			CopyOnWriteArrayList<Command> cList = commands.get(i);
 			Iterator<Command> it = cList.iterator();
 			while (it.hasNext()) {
-				//this.trace("        while it.hasNext iteration");
-				
 				Command c = it.next();
 				// serialize
 				sfsArr.addSFSArray(c.Serialize());

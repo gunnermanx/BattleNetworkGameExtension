@@ -287,6 +287,17 @@ public class Arena implements UnitDamagedListener {
 		return new TryMovePlayerUnitResult(false, 0, 0);
 	}
 	
+	
+	public Unit GetPlayerUnit(Arena.Ownership owner) {
+		if (owner == Arena.Ownership.PLAYER1) {
+			return this.p1PlayerUnit;
+		} else if (owner == Arena.Ownership.PLAYER2) {
+			return this.p2PlayerUnit;
+		}
+		this.ext.trace("returning null player unit for owner that is none");
+		return null;
+	}
+	
 	private boolean IsPathable(Arena.Ownership owner, int x, int y) {
 		if (x >= ARENA_LENGTH || x < 0 || y >= ARENA_WIDTH || y < 0) {
 			return false;
@@ -295,6 +306,7 @@ public class Arena implements UnitDamagedListener {
 		return arena[x][y].owner == owner && 
 				arena[x][y].state == Tile.State.EMPTY;
 	}
+	
 	
 	
 	

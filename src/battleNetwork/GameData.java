@@ -62,4 +62,15 @@ public class GameData {
 		public static final String SPEED = "speed";
 		public static final String DAMAGE = "damage";
 	}
+	
+	// cannons
+	// shots/guns
+	//     element spreads
+	// bombs
+	// swords 
+	// shock waves
+	// towers
+	// quakes
+	// punches
+	// dash
 }
