@@ -35,11 +35,6 @@ public class Arena implements UnitDamagedListener {
 		arena = new Tile[ARENA_LENGTH][ARENA_WIDTH];
 		units = new Unit[ARENA_LENGTH][ARENA_WIDTH];
 		
-		
-		
-		
-//		p1Units = new CopyOnWriteArrayList<Unit>();
-//		p2Units = new CopyOnWriteArrayList<Unit>();
 		projectiles = new CopyOnWriteArrayList<Projectile>();
 		
 		this.ext = ext;
