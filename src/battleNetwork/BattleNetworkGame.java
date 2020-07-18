@@ -116,10 +116,7 @@ public class BattleNetworkGame {
 	}
 	
 	public void MovePlayer(int playerId, byte dir) {
-		Arena.TryMovePlayerUnitResult result = arena.TryMovePlayerUnit(playerId, dir);				
-		if (result.valid) {
-			ext.QueueMoveStateChange(playerId, result.x, result.y);
-		}	
+		arena.MovePlayerUnit(playerId, dir);		
 	}
 	
 	public void PlayChip(int playerId, int cid) {		

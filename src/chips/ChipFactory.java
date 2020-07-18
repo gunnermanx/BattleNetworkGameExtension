@@ -1,8 +1,6 @@
 package chips;
 
 import battleNetwork.BattleNetworkGame;
-import battleNetwork.GameData;
-import battleNetwork.entities.Arena;
 import battleNetwork.entities.Player;
 import net.sf.json.JSONObject;
 

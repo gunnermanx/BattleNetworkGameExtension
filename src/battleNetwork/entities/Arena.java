@@ -215,7 +215,6 @@ public class Arena implements UnitDamagedListener {
 			this.ext.trace("Checking for player1, starting %d, ending %d", rowX, ARENA_LENGTH);
 		    for (int x = rowX; x < ARENA_LENGTH; x++) {
 		    	Unit u = units[x][rowY];
-		    	this.ext.trace(String.format("checking %d,%d", x, rowY));
 		    	if (u != null && u.owner != owner) {
 		    		return u;
 		    	}
@@ -224,7 +223,6 @@ public class Arena implements UnitDamagedListener {
 			this.ext.trace("Checking for player2, starting %d, ending %d", rowX, ARENA_LENGTH);
 			for (int x = rowX; x >= 0; x--) {
 				Unit u = units[x][rowY];
-				this.ext.trace(String.format("checking %d,%d", x, rowY));
 				if (u != null && u.owner != owner) {
 					return u;
 		    	}
@@ -234,7 +232,7 @@ public class Arena implements UnitDamagedListener {
 		return null;
 	}
 	
-	public TryMovePlayerUnitResult TryMovePlayerUnit(int playerId, byte dir) {
+	public void MovePlayerUnit(int playerId, byte dir) {
 		Unit u;	
 		// TODO: sketchy
 		if (playerId == 1) {
@@ -250,7 +248,7 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posY++;
 						units[u.posX][u.posY] = u;
-						return new TryMovePlayerUnitResult(true, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
 					}
 					break;
 				case (byte)'d':
@@ -258,7 +256,7 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posY--;
 						units[u.posX][u.posY] = u;
-						return new TryMovePlayerUnitResult(true, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
 					}
 					break;
 				case (byte)'l':
@@ -266,7 +264,7 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posX--;
 						units[u.posX][u.posY] = u;
-						return new TryMovePlayerUnitResult(true, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
 					}
 					break;
 				case (byte)'r':
@@ -274,16 +272,13 @@ public class Arena implements UnitDamagedListener {
 						units[u.posX][u.posY] = null;
 						u.posX++;
 						units[u.posX][u.posY] = u;
-						return new TryMovePlayerUnitResult(true, u.posX, u.posY);
+						this.ext.QueueMoveStateChange(playerId, u.posX, u.posY);
 					}
 					break;
 				default:
 					break;
 			}
-			
 		}
-		
-		return new TryMovePlayerUnitResult(false, 0, 0);
 	}
 	
 	
@@ -318,16 +313,4 @@ public class Arena implements UnitDamagedListener {
 			this.val = val;
 		}		
 	}
-	
-	public class TryMovePlayerUnitResult {
-		public boolean valid = false;
-		public int x, y;
-		
-		public TryMovePlayerUnitResult(boolean valid, int x, int y) {
-			this.valid = valid;
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
 }

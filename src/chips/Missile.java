@@ -2,7 +2,6 @@ package chips;
 
 import battleNetwork.BattleNetworkGame;
 import battleNetwork.GameData;
-import battleNetwork.entities.Arena.Ownership;
 import battleNetwork.entities.Player;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

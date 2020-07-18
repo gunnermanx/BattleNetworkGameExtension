@@ -1,12 +1,8 @@
 package chips;
 
 import battleNetwork.BattleNetworkGame;
-import battleNetwork.GameData;
-import battleNetwork.entities.Arena.Ownership;
-import battleNetwork.entities.Arena;
 import battleNetwork.entities.Player;
 import battleNetwork.entities.Unit;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class Cannon extends Chip {
