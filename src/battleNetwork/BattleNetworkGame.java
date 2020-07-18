@@ -109,10 +109,10 @@ public class BattleNetworkGame {
 	
 	
 	public void PlayerBasicAttack(int playerId) {
-		Arena.BasicAttackResult result = arena.BasicAttackFromPlayerUnit(playerId);				
-		if (result.target != null) {
-			ext.QueueDamageDealt(result.target.id, result.damage);
-		} 
+		// TODO 
+		int damage = 1;
+		arena.BasicAttackFromPlayerUnit(playerId);
+		
 	}
 	
 	public void MovePlayer(int playerId, byte dir) {

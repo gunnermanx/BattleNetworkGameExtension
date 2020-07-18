@@ -61,7 +61,7 @@ public class BattleNetworkExtension extends SFSExtension {
 
 	private int lastUpdatedTick = 0;
 	private int currentTick = 0;
-	private static final int TICK_BUFFER_SIZE = 2;
+	private static final int TICK_BUFFER_SIZE = 1;
 	
 	private final Object gameTickLock = new Object();
 	
