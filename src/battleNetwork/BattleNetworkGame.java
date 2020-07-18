@@ -2,11 +2,11 @@ package battleNetwork;
 
 import com.smartfoxserver.v2.entities.User;
 
+import battleNetwork.chips.Chip;
+import battleNetwork.chips.ChipFactory;
 import battleNetwork.entities.Arena;
 import battleNetwork.entities.Player;
 import battleNetwork.entities.Unit;
-import chips.Chip;
-import chips.ChipFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 

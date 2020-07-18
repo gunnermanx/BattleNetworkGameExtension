@@ -1,4 +1,4 @@
-package chips;
+package battleNetwork.chips;
 
 import battleNetwork.BattleNetworkGame;
 import battleNetwork.GameData;
