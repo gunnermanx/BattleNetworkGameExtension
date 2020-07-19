@@ -38,10 +38,8 @@ public class LoginEventHandler extends BaseServerEventHandler
     		
     		// Successful login
     		if (getApi().checkSecurePassword(session, pa.GetSecret(), password)) {
-    			
-    			// Get player data and send it back to the player
-    			
-    			
+    			// Set accountId into sessionProperty
+    			session.setProperty("accountId", pa.GetAccountId());
     			return;
     		}
     		

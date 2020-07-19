@@ -24,20 +24,29 @@ public class PlayerAuth {
 	@Column(name = "secret", nullable = false)
 	private String secret;
 	
+	@Id
+	@Column(name = "accountId")
+	private Long accountId;
+	
 	
 	public void SetUsername(String username) {
 		this.username = username;
 	}
-	
 	public String GetUsername() {
 		return this.username;
 	}
 	
 	public void SetSecret(String secret) {
 		this.secret = secret;
-	}
-	
+	}	
 	public String GetSecret() {
 		return this.secret;
+	}
+	
+	public void SetAccountId(Long accountId) {
+		this.accountId = accountId;
+	}	
+	public Long GetAccountId() {
+		return this.accountId;
 	}
 }
