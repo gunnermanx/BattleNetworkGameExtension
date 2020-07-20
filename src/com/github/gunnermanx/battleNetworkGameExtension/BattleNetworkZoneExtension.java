@@ -14,6 +14,8 @@ import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.Use
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserJoinZoneEventHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerChip;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerDeckEntry;
 import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.extensions.SFSExtension;
@@ -66,6 +68,26 @@ public class BattleNetworkZoneExtension extends SFSExtension {
         	pa.SetSecret("098f6bcd4621d373cade4e832627b4f6");
         	pa.SetAccount(pacc);
         	
+        	PlayerChip c11 = new PlayerChip();
+        	c11.SetAccount(pacc);
+        	c11.SetChipDataId((short)0);
+        	c11.SetLevel((byte)1);
+        	c11.SetXp((short)0);
+        	
+        	PlayerChip c12 = new PlayerChip();
+        	c12.SetAccount(pacc);
+        	c12.SetChipDataId((short)1);
+        	c12.SetLevel((byte)1);
+        	c12.SetXp((short)0);
+        	
+        	PlayerChip c13 = new PlayerChip();
+        	c13.SetAccount(pacc);
+        	c13.SetChipDataId((short)2);
+        	c13.SetLevel((byte)1);
+        	c13.SetXp((short)0);
+        	
+        	
+        	
         	
         	// Test account 2      	
         	PlayerAccount pacc2 = new PlayerAccount();
@@ -78,12 +100,83 @@ public class BattleNetworkZoneExtension extends SFSExtension {
         	pa2.SetSecret("098f6bcd4621d373cade4e832627b4f6");
         	pa2.SetAccount(pacc2);
         	        	
+        	PlayerChip c21 = new PlayerChip();
+        	c21.SetAccount(pacc2);
+        	c21.SetChipDataId((short)0);
+        	c21.SetLevel((byte)1);
+        	c21.SetXp((short)0);
+        	
+        	PlayerChip c22 = new PlayerChip();
+        	c22.SetAccount(pacc2);
+        	c22.SetChipDataId((short)1);
+        	c22.SetLevel((byte)1);
+        	c22.SetXp((short)0);
+        	
+        	PlayerChip c23 = new PlayerChip();
+        	c23.SetAccount(pacc2);
+        	c23.SetChipDataId((short)2);
+        	c23.SetLevel((byte)1);
+        	c23.SetXp((short)0);
+        	
+        	PlayerDeckEntry pd11 = new PlayerDeckEntry();
+        	pd11.SetAccount(pacc);
+        	pd11.SetChipId(c11);
+        	pd11.SetCopies((byte)2);
+        	pd11.SetDeckId((short)1);
+        	
+        	PlayerDeckEntry pd12 = new PlayerDeckEntry();
+        	pd12.SetAccount(pacc);
+        	pd12.SetChipId(c12);
+        	pd12.SetCopies((byte)2);
+        	pd12.SetDeckId((short)1);
+        	
+        	PlayerDeckEntry pd13 = new PlayerDeckEntry();
+        	pd13.SetAccount(pacc);
+        	pd13.SetChipId(c13);
+        	pd13.SetCopies((byte)2);
+        	pd13.SetDeckId((short)1);
+        	
+        	
+        	PlayerDeckEntry pd21 = new PlayerDeckEntry();
+        	pd21.SetAccount(pacc2);
+        	pd21.SetChipId(c21);
+        	pd21.SetCopies((byte)2);
+        	pd21.SetDeckId((short)1);
+        	
+        	PlayerDeckEntry pd22 = new PlayerDeckEntry();
+        	pd22.SetAccount(pacc2);
+        	pd22.SetChipId(c22);
+        	pd22.SetCopies((byte)2);
+        	pd22.SetDeckId((short)1);
+        	
+        	PlayerDeckEntry pd23 = new PlayerDeckEntry();
+        	pd23.SetAccount(pacc2);
+        	pd23.SetChipId(c23);
+        	pd23.SetCopies((byte)2);
+        	pd23.SetDeckId((short)1);
+        	
             // Store
             em.getTransaction().begin();
             em.persist(pacc);
             em.persist(pacc2);
             em.persist(pa);
             em.persist(pa2);
+            
+            em.persist(c11);
+            em.persist(c12);
+            em.persist(c13);
+            em.persist(pd11);
+            em.persist(pd12);
+            em.persist(pd13);
+            
+            em.persist(c21);
+            em.persist(c22);
+            em.persist(c23);
+            em.persist(pd21);
+            em.persist(pd22);
+            em.persist(pd23);
+            
+            
             em.getTransaction().commit();
         }		
     }

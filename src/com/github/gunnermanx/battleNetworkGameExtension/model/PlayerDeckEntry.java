@@ -35,4 +35,20 @@ public class PlayerDeckEntry {
 	@Basic
 	@Column(name = "copies", columnDefinition = "TINYINT UNSIGNED NOT NULL")
 	private byte copies;
+	
+	public void SetAccount(PlayerAccount account) {
+		this.account = account;
+	}
+	
+	public void SetChipId(PlayerChip chip) {
+		this.chip = chip;
+	}
+	
+	public void SetDeckId(short id) {
+		this.deckId = id;
+	}
+	
+	public void SetCopies(byte copies) {
+		this.copies = copies;		
+	}
 }
