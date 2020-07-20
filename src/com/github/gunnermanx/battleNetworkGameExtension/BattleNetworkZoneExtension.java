@@ -43,7 +43,7 @@ public class BattleNetworkZoneExtension extends SFSExtension {
 		addEventHandler(SFSEventType.USER_JOIN_ZONE, UserJoinZoneEventHandler.class);
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
-		initDatabase();
+		//initDatabase();
 	}
 	
 	private void initDatabase()

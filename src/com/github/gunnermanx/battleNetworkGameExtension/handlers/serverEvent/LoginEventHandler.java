@@ -2,6 +2,7 @@ package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import javax.persistence.EntityManager;
 
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.core.ISFSEvent;
@@ -38,9 +39,29 @@ public class LoginEventHandler extends BaseServerEventHandler
     		
     		// Successful login
     		if (getApi().checkSecurePassword(session, pa.GetSecret(), password)) {
-    			// Set accountId into sessionProperty
-    			session.setProperty("accountId", pa.GetAccountId());
-    			return;
+    			
+    			try {
+    				// Get account details for the user that is logging in
+    				PlayerAccount acc = em.createQuery("SELECT acc FROM PlayerAccount acc WHERE acc.id = ?1", PlayerAccount.class)
+	    				.setParameter(1, pa.GetAccount().GetId())
+	    				.getSingleResult();
+    				
+    				// Set account properties into session, put them on user after
+        			session.setProperty("account_id", acc.GetId());
+        			session.setProperty("level", acc.GetLevel());
+        			session.setProperty("xp", acc.GetXP());
+        			session.setProperty("points", acc.GetPoints());
+        			
+        			return;
+        			
+    			} catch (Exception e) {
+    				// TODO error codes
+    				errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
+    	            errData.addParameter(username);
+    			}
+    			
+    			
+    			
     		}
     		
     		// Create the error code that will be sent to the client and raise the exception
