@@ -16,11 +16,11 @@ import javax.persistence.Table;
 public class PlayerChip {
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "account_id", referencedColumnName = "id", columnDefinition = "INT UNSIGNED NOT NULL")
+	@JoinColumn(name = "account_id", referencedColumnName = "id", columnDefinition = "INT NOT NULL")
 	private PlayerAccount account;
 	
 	@Basic
@@ -35,5 +35,19 @@ public class PlayerChip {
 	@Column(name = "xp", columnDefinition = "SMALLINT UNSIGNED NOT NULL DEFAULT 0")
 	private short xp;
 	
-	//@OneToMany(mappedBy = "")
+	public void SetAccount(PlayerAccount account) {
+		this.account = account;
+	}
+	
+	public void SetChipDataId(short id) {
+		this.chipDataId = id;
+	}
+	
+	public void SetLevel(byte level) {
+		this.level = level;		
+	}
+	
+	public void SetXp(short xp) {
+		this.xp = xp;		
+	}
 }

@@ -19,8 +19,8 @@ import javax.persistence.Table;
 @Table(name="player_accounts")
 public class PlayerAccount {
 	@Id
-	@Column(name = "id", columnDefinition = "INT UNSIGNED NOT NULL")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@Column(name = "id")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 
 	@Basic
@@ -38,7 +38,9 @@ public class PlayerAccount {
 	@OneToMany(mappedBy = "account")
 	private List<PlayerDeckEntry> playerDeck;
 	
-
+	public void SetId(int id) {
+		this.id = id;
+	}
 	public int GetId() {
 		return this.id;
 	}
@@ -64,10 +66,8 @@ public class PlayerAccount {
 		return this.points;
 	}
 	
-//	@OneToOne(mappedBy = "account")
-//	private PlayerAuth auth;
-	
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "account_id")
 	private List<PlayerChip> playerChips = new ArrayList<PlayerChip>();
+	
 }

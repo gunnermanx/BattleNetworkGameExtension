@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class PlayerAuth {
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 		
 	@Basic
@@ -29,8 +29,12 @@ public class PlayerAuth {
 	private String secret;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "account_id", referencedColumnName = "id", columnDefinition = "INT UNSIGNED NOT NULL")
+	@JoinColumn(name = "account_id")
 	private PlayerAccount account;
+	
+	public void SetAccount(PlayerAccount account) {
+		this.account = account;
+	}
 	
 	public PlayerAccount GetAccount() {
 		return this.account;

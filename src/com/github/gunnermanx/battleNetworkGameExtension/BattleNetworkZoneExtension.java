@@ -12,6 +12,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.M
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.LoginEventHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserDisconnectHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserJoinZoneEventHandler;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
 import com.smartfoxserver.v2.core.SFSEventType;
 import com.smartfoxserver.v2.entities.User;
@@ -43,7 +44,7 @@ public class BattleNetworkZoneExtension extends SFSExtension {
 		addEventHandler(SFSEventType.USER_JOIN_ZONE, UserJoinZoneEventHandler.class);
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
-		//initDatabase();
+		initDatabase();
 	}
 	
 	private void initDatabase()
@@ -54,16 +55,33 @@ public class BattleNetworkZoneExtension extends SFSExtension {
         // Table is empty, populate 1 record
         if (res.size() == 0)
         {
+        	// Test account 1
+        	PlayerAccount pacc = new PlayerAccount();
+        	pacc.SetLevel((byte)1);
+        	pacc.SetPoints((short)101);
+        	pacc.SetXP(0);
+        	
         	PlayerAuth pa = new PlayerAuth();
         	pa.SetUsername("test1");
         	pa.SetSecret("098f6bcd4621d373cade4e832627b4f6");
- 
+        	pa.SetAccount(pacc);
+        	
+        	
+        	// Test account 2      	
+        	PlayerAccount pacc2 = new PlayerAccount();
+        	pacc2.SetLevel((byte)1);
+        	pacc2.SetPoints((short)102);
+        	pacc2.SetXP(0);
+        	
         	PlayerAuth pa2 = new PlayerAuth();
         	pa2.SetUsername("test2");
         	pa2.SetSecret("098f6bcd4621d373cade4e832627b4f6");
-        	
+        	pa2.SetAccount(pacc2);
+        	        	
             // Store
             em.getTransaction().begin();
+            em.persist(pacc);
+            em.persist(pacc2);
             em.persist(pa);
             em.persist(pa2);
             em.getTransaction().commit();

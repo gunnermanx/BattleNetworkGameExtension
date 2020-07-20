@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class PlayerDeckEntry {
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
 	@Basic
