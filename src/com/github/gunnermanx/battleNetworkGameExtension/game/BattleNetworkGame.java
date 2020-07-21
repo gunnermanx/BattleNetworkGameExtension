@@ -163,10 +163,10 @@ public class BattleNetworkGame implements UnitDamagedListener {
 					this.ext.trace("hit!");
 					//this.ext.trace(String.format("  Hit with projectile %d!", p.toString()));
 											
-					u.Damage(p.damage);
+					u.damage(p.damage);
 					ext.QueueDamageDealt(u.id, p.damage);
 					
-					if (u.CurrentHP() <= 0) {
+					if (u.currentHP() <= 0) {
 						// TODO need to trigger a unit death command
 						units[p.posX][p.posY] = null;
 					}
@@ -196,15 +196,15 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			if (player1 == null) {
 				player1 = new Player(id, user, Owner.PLAYER1);
 				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
-				player1.unit.Register(this);
-				this.ext.SendChipHandInit(user, player1.deck.GetChipIdsInHand());
+				player1.unit.registerUnitDamagedListener(this);
+				this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
 				player2 = new Player(id, user, Owner.PLAYER2);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
-				player2.unit.Register(this);
-				this.ext.SendChipHandInit(user, player2.deck.GetChipIdsInHand());
+				player2.unit.registerUnitDamagedListener(this);
+				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand());
 			}
 		}
 	}
@@ -260,7 +260,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	public void playChip(int playerId, short cid) {		
 		Player player = getPlayer(playerId);
 		// TODO casting now, fix later
-		if (player.HasChipInHand(cid)) {
+		if (player.hasChipInHand(cid)) {
 			// we know cid is valid, already validated in the handler
 			JSONObject chipJson = ext.GameData().GetChipData(cid);
 			
@@ -274,7 +274,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				return;
 			}
 			
-			short nextCid = player.PlayChipAndGetNext(cid);
+			short nextCid = player.playChipAndGetNext(cid);
 			this.ext.QueueChipDrawn(nextCid);
 			
 			player.energy -= chipCost;
@@ -344,7 +344,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	
 	public void damageUnit(Unit target, int damage) {
 		if (target != null) {
-			target.Damage(damage);		
+			target.damage(damage);		
 			this.ext.QueueDamageDealt(target.id, damage);
 		}
 	}
@@ -366,7 +366,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	
 	
 	@Override
-	public void OnUnitDamaged(int unitId, int damage, int currentHitpoints) {
+	public void onUnitDamaged(int unitId, int damage, int currentHitpoints) {
 		if (unitId == P1_PLAYERUNIT_ID && currentHitpoints <= 0) {
 			this.ext.Player2Victory();
 		} else if (unitId == P2_PLAYERUNIT_ID && currentHitpoints <= 0) {

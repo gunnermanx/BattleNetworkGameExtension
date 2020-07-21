@@ -22,10 +22,10 @@ public class Player {
 		this.energy = 0;
 		this.owner = owner;
 		
-		InitializeDeck();
+		initializeDeck();
 	}
 	
-	private void InitializeDeck() {
+	private void initializeDeck() {
 		PlayerAccount acc = (PlayerAccount) this.user.getProperty("account");
 		
 		// assume for now active deck is 1;
@@ -45,11 +45,11 @@ public class Player {
 	}
 	
 	
-	public boolean HasChipInHand(short chipId) {
-		return this.deck.IsChipInHand(chipId); 
+	public boolean hasChipInHand(short chipId) {
+		return this.deck.isChipInHand(chipId); 
 	}
 	
-	public short PlayChipAndGetNext(short chipId) {
-		return this.deck.PlayChipAndReturnNext(chipId);
+	public short playChipAndGetNext(short chipId) {
+		return this.deck.playChipAndReturnNext(chipId);
 	}
 }
