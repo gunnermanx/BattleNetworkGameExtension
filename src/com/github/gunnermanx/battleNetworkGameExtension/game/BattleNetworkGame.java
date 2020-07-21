@@ -2,6 +2,7 @@ package com.github.gunnermanx.battleNetworkGameExtension.game;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkExtension;
@@ -380,6 +381,46 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Arena State Related Checks
     //================================================================================
+	public List<Unit> getUnitsInRange(Owner owner, int rowX, int rowY, int width, int depth) {
+		List<Unit> targets = new ArrayList<Unit>();
+		
+		// assumption: width is really only 1 or 3, doesnt make sense to have a skill with 2
+		int startY, endY;
+		if (width == 1) {
+			startY = rowY;
+			endY = rowY;
+		} else {
+			startY = Math.min(rowY - 1, 0);
+			endY = Math.max(rowY+1, ARENA_WIDTH-1);
+		}
+		
+		this.ext.trace(String.format("getUnitsInRange: Checking startingY %d, endingY %d", startY, endY));
+		
+		for (int y = startY; y <= endY; y++) {
+			if (owner == Owner.PLAYER1) {
+				int endX = Math.min(rowX + depth, ARENA_LENGTH);			
+			    for (int x = rowX; x < endX; x++) {
+			    	this.ext.trace(String.format("getUnitsInRange: Checking for player1, [%d,%d]", x, y));
+			    	Unit u = units[x][y];
+			    	if (u != null && u.owner != owner) {
+			    		targets.add(u);
+			    	}
+			    }
+			} else if (owner == Owner.PLAYER2) {
+				int endX = Math.max(rowX - depth, 0);
+				for (int x = rowX; x >= endX; x--) {
+					Unit u = units[x][y];
+					this.ext.trace(String.format("getUnitsInRange: Checking for player2, [%d,%d]", x, y));
+					if (u != null && u.owner != owner) {
+						targets.add(u);
+			    	}
+			    }
+			}
+		}
+				
+		return targets;
+	}
+	
 	public Unit getFirstEnemyUnitInRow(Owner owner, int rowX, int rowY) {
 		
 		if (owner == Owner.PLAYER1) {

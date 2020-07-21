@@ -14,6 +14,8 @@ public class ChipFactory {
 				return new Missile(game, player, data, pUnitX, pUnitY);
 			case (short) 1:
 				return new Cannon(game, player, data, pUnitX, pUnitY);
+			case (short) 2:
+				return new Sword(game, player, data, pUnitX, pUnitY);
 		} 
 		
 		
