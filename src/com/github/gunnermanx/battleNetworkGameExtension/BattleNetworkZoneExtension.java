@@ -36,14 +36,13 @@ public class BattleNetworkZoneExtension extends SFSExtension {
 		
 		// Activates the login routing to the Extension without manual configuration
         getParentZone().setCustomLogin(true);
- 
-        // Add event handler for login events
-        addEventHandler(SFSEventType.USER_LOGIN, new LoginEventHandler(em));
- 
-		
+        	
 		matchmakingUsers = new CopyOnWriteArrayList<User>();
+		
 		addRequestHandler("matchmaking", MatchmakingRequestHandler.class);
-		addEventHandler(SFSEventType.USER_JOIN_ZONE, UserJoinZoneEventHandler.class);
+				
+        addEventHandler(SFSEventType.USER_LOGIN, new LoginEventHandler(em));
+        addEventHandler(SFSEventType.USER_JOIN_ZONE, new UserJoinZoneEventHandler(em));
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
 		initDatabase();
@@ -86,8 +85,11 @@ public class BattleNetworkZoneExtension extends SFSExtension {
         	c13.SetLevel((byte)1);
         	c13.SetXp((short)0);
         	
+        	pacc.GetPlayerChips().add(c11);
+        	pacc.GetPlayerChips().add(c12);
+        	pacc.GetPlayerChips().add(c13);
         	
-        	
+        	        	
         	
         	// Test account 2      	
         	PlayerAccount pacc2 = new PlayerAccount();
@@ -117,6 +119,12 @@ public class BattleNetworkZoneExtension extends SFSExtension {
         	c23.SetChipDataId((short)2);
         	c23.SetLevel((byte)1);
         	c23.SetXp((short)0);
+        	
+        	pacc2.GetPlayerChips().add(c21);
+        	pacc2.GetPlayerChips().add(c22);
+        	pacc2.GetPlayerChips().add(c23);
+        	
+        	
         	
         	PlayerDeckEntry pd11 = new PlayerDeckEntry();
         	pd11.SetAccount(pacc);

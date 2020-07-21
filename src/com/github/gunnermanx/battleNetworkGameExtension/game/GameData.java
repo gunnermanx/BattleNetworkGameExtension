@@ -32,12 +32,12 @@ public class GameData {
 	}	
 	
 	
-	public boolean IsValidChipId(int chipId) {
+	public boolean IsValidChipId(short chipId) {
 		String chipIdStr = Integer.toString(chipId);
 		return chips.has(chipIdStr);
 	}
 	
-	public JSONObject GetChipData(int chipId) {
+	public JSONObject GetChipData(short chipId) {
 		String chipIdStr = Integer.toString(chipId);
 		return chips.getJSONObject(chipIdStr);	
 	}

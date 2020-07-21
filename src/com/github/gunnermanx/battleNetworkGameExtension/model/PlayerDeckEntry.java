@@ -22,7 +22,7 @@ public class PlayerDeckEntry {
 	
 	@Basic
 	@Column(name = "deck_id", columnDefinition = "TINYINT UNSIGNED NOT NULL")
-	private int deckId;
+	private short deckId;
 	
 	@ManyToOne
 	@JoinColumn(name = "account_id")
@@ -48,7 +48,19 @@ public class PlayerDeckEntry {
 		this.deckId = id;
 	}
 	
+	public short GetDeckId() {
+		return this.deckId;
+	}
+	
 	public void SetCopies(byte copies) {
 		this.copies = copies;		
+	}
+	
+	public short GetCopies() {
+		return this.copies;
+	}
+	
+	public PlayerChip GetChip() {
+		return this.chip;
 	}
 }

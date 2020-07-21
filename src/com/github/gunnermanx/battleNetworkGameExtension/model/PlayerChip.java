@@ -20,7 +20,7 @@ public class PlayerChip {
 	private int id;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "account_id", referencedColumnName = "id", columnDefinition = "INT NOT NULL")
+	@JoinColumn(name = "account_id")
 	private PlayerAccount account;
 	
 	@Basic
@@ -43,8 +43,16 @@ public class PlayerChip {
 		this.chipDataId = id;
 	}
 	
+	public short GetChipData() {
+		return this.chipDataId;
+	}
+	
 	public void SetLevel(byte level) {
 		this.level = level;		
+	}
+	
+	public byte GetLevel() {
+		return this.level;
 	}
 	
 	public void SetXp(short xp) {

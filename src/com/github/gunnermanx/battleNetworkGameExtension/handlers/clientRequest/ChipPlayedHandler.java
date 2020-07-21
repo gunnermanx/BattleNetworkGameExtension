@@ -22,7 +22,7 @@ public class ChipPlayedHandler extends BaseClientRequestHandler {
 			throw new SFSRuntimeException("Invalid request, missing x or y");
 		}
 		
-		int cid = params.getInt("cid");	// direction
+		short cid = params.getShort("cid");	// direction
 		
 		// assumption: all chips have some kind of target, or originates from player unit, or set locations
 		

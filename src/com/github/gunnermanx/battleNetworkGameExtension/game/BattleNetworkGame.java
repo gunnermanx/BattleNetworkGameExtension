@@ -6,6 +6,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.chips.ChipFactory;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Arena;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Player;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.smartfoxserver.v2.entities.User;
 
 import net.sf.json.JSONObject;
@@ -93,6 +94,9 @@ public class BattleNetworkGame {
 		// TODO see if there are reconnection issues
 		int id = user.getPlayerId();
 		
+		
+		
+		
 		this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
 		
 		if (id == 1) {
@@ -100,12 +104,14 @@ public class BattleNetworkGame {
 				player1 = new Player(id, user, Arena.Ownership.PLAYER1);
 				player1.unit = arena.SpawnPlayerUnit(Arena.Ownership.PLAYER1, "pu1", 0, 1);
 				player1.unit.Register(arena);
+				this.ext.SendChipHandInit(user, player1.deck.GetChipIdsInHand());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
 				player2 = new Player(id, user, Arena.Ownership.PLAYER2);
 				player2.unit = arena.SpawnPlayerUnit(Arena.Ownership.PLAYER2, "pu2", 5, 1);
 				player2.unit.Register(arena);
+				this.ext.SendChipHandInit(user, player2.deck.GetChipIdsInHand());
 			}
 		}
 		
@@ -121,29 +127,36 @@ public class BattleNetworkGame {
 		arena.MovePlayerUnit(GetPlayer(playerId), dir);		
 	}
 	
-	public void PlayChip(int playerId, int cid) {		
-		// we know cid is valid, already validated in the handler
-		JSONObject chipJson = ext.GameData().GetChipData(cid);
-		
-		// Get the cost, validate and deduct
-		int chipCost = chipJson.getInt(GameData.ChipDataKeys.COST);
+	public void PlayChip(int playerId, short cid) {		
 		Player player = GetPlayer(playerId);
-		if (player == null || player.energy < chipCost) {
-			// logs?
-			// error?
-			this.ext.trace("ERROR is null or player has less energy than the cost");
+		// TODO casting now, fix later
+		if (player.HasChipInHand(cid)) {
+			// we know cid is valid, already validated in the handler
+			JSONObject chipJson = ext.GameData().GetChipData(cid);
 			
-			return;
-		}
-		player.energy -= chipCost;
-		this.ext.QueueEnergyChanged(0, playerId, -chipCost);
-		
-		Unit playerUnit = GetPlayer(playerId).unit;
-		Chip chip = ChipFactory.getChip(this, cid, player, chipJson, playerUnit.posX, playerUnit.posY);
-		if (chip != null) {
-			activeChip = chip;
-			activeChip.Init();
-		}
+			// Get the cost, validate and deduct
+			int chipCost = chipJson.getInt(GameData.ChipDataKeys.COST);		
+			if (player == null || player.energy < chipCost) {
+				// logs?
+				// error?
+				this.ext.trace("ERROR is null or player has less energy than the cost");
+				
+				return;
+			}
+			
+			short nextCid = player.PlayChipAndGetNext(cid);
+			this.ext.QueueChipDrawn(nextCid);
+			
+			player.energy -= chipCost;
+			this.ext.QueueEnergyChanged(0, playerId, -chipCost);
+			
+			Unit playerUnit = GetPlayer(playerId).unit;
+			Chip chip = ChipFactory.getChip(this, cid, player, chipJson, playerUnit.posX, playerUnit.posY);
+			if (chip != null) {
+				activeChip = chip;
+				activeChip.Init();
+			}
+		}		
 	}
 	
 	public void SpawnProjectile(Player player, int projectileID) {

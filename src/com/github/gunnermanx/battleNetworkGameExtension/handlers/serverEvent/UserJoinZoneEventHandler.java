@@ -1,8 +1,14 @@
 package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkZoneExtension;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerChip;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerDeckEntry;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.SmartFoxServer;
 import com.smartfoxserver.v2.api.ISFSApi;
@@ -16,10 +22,16 @@ import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
 public class UserJoinZoneEventHandler extends BaseServerEventHandler {
 
-	private final String ACCOUNT_ID = "account_id";
+	private final String ACCOUNT = "account";
 	private final String LEVEL = "level";
 	private final String XP = "xp";
 	private final String POINTS = "points";
+	
+	private final EntityManager em;
+	 
+    public UserJoinZoneEventHandler(EntityManager em) {
+        this.em = em;
+    }
 	
 	@Override
 	public void handleServerEvent(ISFSEvent evt) throws SFSException {
@@ -34,29 +46,42 @@ public class UserJoinZoneEventHandler extends BaseServerEventHandler {
 		
 		// Get account properties from session
 		ISession session = user.getSession();
-		int accountId = (int) session.getProperty(ACCOUNT_ID);
-		session.removeProperty(ACCOUNT_ID);
-		byte level = (byte) session.getProperty(LEVEL);
-		session.removeProperty(LEVEL);
-		int xp = (int) session.getProperty(XP);
-		session.removeProperty(XP);
-		short points = (short) session.getProperty(POINTS);
-		session.removeProperty(POINTS);		
+		PlayerAccount acc = (PlayerAccount) session.getProperty(ACCOUNT);
 		
-		// Store data from session into user properties
-		UserVariable accountIdVariable = new SFSUserVariable(ACCOUNT_ID, accountId);
-		UserVariable levelVariable = new SFSUserVariable(LEVEL, level);
-		UserVariable xpVariable = new SFSUserVariable(XP, xp);
-		UserVariable pointsVariable = new SFSUserVariable(POINTS, points);
-		
-		this.getApi().setUserVariables(user, Arrays.asList(
-			accountIdVariable,
-			levelVariable,
-			xpVariable,
-			pointsVariable
-		));
-		
-		ext.trace(String.format("id:%d, level:%d, xp:%d, points:%d", accountId, level, xp, points));
+		try {
+			user.setProperty(ACCOUNT, acc);
+			
+			UserVariable levelVariable = new SFSUserVariable(LEVEL, acc.GetLevel());
+			UserVariable xpVariable = new SFSUserVariable(XP, acc.GetXP());
+			UserVariable pointsVariable = new SFSUserVariable(POINTS, acc.GetPoints());
+						
+			List<PlayerChip> chips = acc.GetPlayerChips();
+			for (int i = 0; i < chips.size(); i++ ) {
+				this.trace(String.format("chip id: %d, level: %d", 
+						chips.get(i).GetChipData(),
+						chips.get(i).GetLevel()
+				));
+			}
+			
+			this.getApi().setUserVariables(user, Arrays.asList(
+				levelVariable,
+				xpVariable,
+				pointsVariable
+			));
+			
+			ext.trace(String.format("id:%d, level:%d, xp:%d, points:%d", 
+					acc.GetId(), 
+					(byte) levelVariable.getValue(), 
+					xpVariable.getIntValue(), 
+					(short) pointsVariable.getValue()
+			));
+			
+			
+			
+		} catch(Exception e) {
+			// TODO
+			this.trace(e.toString());
+		}		
 	}
 
 }

@@ -7,6 +7,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,8 +36,21 @@ public class PlayerAccount {
 	@Column(name = "points", columnDefinition = "SMALLINT UNSIGNED NOT NULL DEFAULT 0")
 	private short points;
 	
-	@OneToMany(mappedBy = "account")
+	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
 	private List<PlayerDeckEntry> playerDeck;
+	
+	public List<PlayerDeckEntry> GetPlayerDeckEntries() {
+		return this.playerDeck;
+	}
+		
+	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+	private List<PlayerChip> playerChips = new ArrayList<PlayerChip>();
+	
+	
+	public List<PlayerChip> GetPlayerChips() {
+		return this.playerChips;
+	}
+	
 	
 	public void SetId(int id) {
 		this.id = id;
@@ -66,8 +80,6 @@ public class PlayerAccount {
 		return this.points;
 	}
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "account_id")
-	private List<PlayerChip> playerChips = new ArrayList<PlayerChip>();
+	
 	
 }

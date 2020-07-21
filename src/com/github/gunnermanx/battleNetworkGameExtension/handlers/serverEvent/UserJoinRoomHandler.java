@@ -1,6 +1,7 @@
 package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkExtension;
+import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.smartfoxserver.v2.core.ISFSEvent;
 import com.smartfoxserver.v2.core.SFSEventParam;
 import com.smartfoxserver.v2.entities.User;

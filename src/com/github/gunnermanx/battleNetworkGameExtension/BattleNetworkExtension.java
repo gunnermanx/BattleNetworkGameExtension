@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame;
 import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
+import com.github.gunnermanx.battleNetworkGameExtension.game.commands.ChipDrawnCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.Command;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.DamageDealtCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.EnergyChangedCommand;
@@ -20,6 +21,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.M
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserJoinRoomHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserLeaveRoomHandler;
 import com.smartfoxserver.v2.core.SFSEventType;
+import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.SFSArray;
 import com.smartfoxserver.v2.entities.data.SFSObject;
 import com.smartfoxserver.v2.extensions.SFSExtension;
@@ -48,6 +50,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	private static final String CMD_UPDATE = "tick";
+	private static final String HAND_INIT = "hand";
 	private static final String PLAYER_VICTORY = "pv";
 
 	
@@ -200,6 +203,18 @@ public class BattleNetworkExtension extends SFSExtension {
 		this.send(PLAYER_VICTORY, payload, Arrays.asList(game.player1.user, game.player2.user));
 	}
 	
+	public void SendChipHandInit(User user, short[] cids) {
+		SFSObject payload = new SFSObject();
+		SFSArray chips = new SFSArray();
+		chips.addShort(cids[0]);
+		chips.addShort(cids[1]);
+		chips.addShort(cids[2]);
+		chips.addShort(cids[3]);
+		payload.putSFSArray("chips", chips);
+		this.send(HAND_INIT, payload, user);		
+	}
+	
+		
 	public void QueueEnergyChanged(int currentTick, int playerId, int delta) {
 		this.trace(String.format("energy changed for player %d, delta: %d at TICK: %d", playerId, delta, currentTick));
 		Command e = new EnergyChangedCommand(playerId, delta);		
@@ -220,6 +235,13 @@ public class BattleNetworkExtension extends SFSExtension {
 		Command sp = new SpawnProjectileCommand(playerId, cid);
 		QueueCommand(sp);
 	}
+	
+	public void QueueChipDrawn(short cid) {
+		Command cd = new ChipDrawnCommand(cid);
+		QueueCommand(cd);
+	}
+	
+	
 	
 	private void QueueCommand(Command c) {
 		CopyOnWriteArrayList<Command> tickCommandList = commands.get(currentTick);

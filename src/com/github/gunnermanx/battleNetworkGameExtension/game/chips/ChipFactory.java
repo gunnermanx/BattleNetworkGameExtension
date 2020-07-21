@@ -7,12 +7,12 @@ import net.sf.json.JSONObject;
 
 public class ChipFactory {
 	
-	public static Chip getChip(BattleNetworkGame game, int cid, Player player, JSONObject data, int pUnitX, int pUnitY) {
+	public static Chip getChip(BattleNetworkGame game, short cid, Player player, JSONObject data, int pUnitX, int pUnitY) {
 		
 		switch (cid) {
-			case 0:
+			case (short) 0:
 				return new Missile(game, player, data, pUnitX, pUnitY);
-			case 1:
+			case (short) 1:
 				return new Cannon(game, player, data, pUnitX, pUnitY);
 		} 
 		
