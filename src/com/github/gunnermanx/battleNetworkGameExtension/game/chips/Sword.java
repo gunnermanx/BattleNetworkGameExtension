@@ -1,24 +1,28 @@
 package com.github.gunnermanx.battleNetworkGameExtension.game.chips;
 
+import java.util.List;
+
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Player;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
 
 import net.sf.json.JSONObject;
 
-public class Cannon extends Chip {
+public class Sword extends Chip {
 
-	public Cannon(BattleNetworkGame game, Player player, JSONObject chipJSON, int x, int y) {
+	public Sword(BattleNetworkGame game, Player player, JSONObject chipJSON, int x, int y) {
 		super(game, player, chipJSON, x, y);	
 	}
 
 	@Override
 	public void Init() {
 		
-		int damage = 30; // get from json
+		int damage = 40; // get from json		
+		List<Unit> targets = game.getUnitsInRange(player.owner, this.playerX, this.playerY, 1, 1);
 		
-		Unit target = game.getFirstEnemyUnitInRow(player.owner, this.playerX, this.playerY);
-		this.game.damageUnit(target, damage);		
+		for (int i = 0; i < targets.size(); i++) {
+			this.game.damageUnit(targets.get(i), damage);
+		}				
 	}
 	
 	@Override

@@ -1,11 +1,13 @@
 package com.github.gunnermanx.battleNetworkGameExtension.game.entities;
 
+import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
+
 public class Tile {
 	
-	public Arena.Ownership owner;
+	public Owner owner;
 	public State state;
 	
-	public Tile(Arena.Ownership owner, State state) {
+	public Tile(Owner owner, State state) {
 		this.owner = owner;
 		this.state = state;
 	}
@@ -15,10 +17,6 @@ public class Tile {
 		BROKEN(1),
 		OCCUPIED(2);
 		
-		private int val;
-		
-		private State(int id) {
-			this.val = id;
-		}		
+		private State(int id) {}		
 	}
 }

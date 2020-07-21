@@ -1,7 +1,6 @@
 package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkExtension;
-import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.smartfoxserver.v2.core.ISFSEvent;
 import com.smartfoxserver.v2.core.SFSEventParam;
 import com.smartfoxserver.v2.entities.User;
@@ -19,7 +18,7 @@ public class UserJoinRoomHandler extends BaseServerEventHandler {
 		ext.trace(String.format("id:%d, name:%s, property:%s", user.getId(), user.getName(), user.getPlayerId(), test));
 		
 		if (user.isPlayer() && !ext.IsGameStarted()) {
-			ext.Game().CreatePlayer(user);
+			ext.Game().createPlayer(user);
 			
 			if (ext.getParentRoom().getPlayersList().size() == 2) {	
 				ext.trace("Calling PlayersPresent");

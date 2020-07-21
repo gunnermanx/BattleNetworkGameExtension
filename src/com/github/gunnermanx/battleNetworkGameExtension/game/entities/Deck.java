@@ -14,23 +14,10 @@ public class Deck {
 	private List<PrivateDeckEntry> deck = new ArrayList<PrivateDeckEntry>();
 	
 	public Deck(List<PlayerDeckEntry> deckEntries) {		
-		Initialize(deckEntries);
+		initialize(deckEntries);
 	}
-	
-	public void DebugPrint() {
-		SFSExtension ext = (SFSExtension) SmartFoxServer.getInstance().getZoneManager().getZoneByName("BattleNetwork").getExtension();
 		
-		for (int i = 0; i < this.deck.size(); i++) {
-			ext.trace(String.format("Deck: Pos: %d => chipId: %d", i, this.deck.get(i).chip.GetChipData()));
-		}
-		
-		for (int i = 0; i < this.hand.size(); i++) {
-			ext.trace(String.format("Hand: Pos: %d => chipId: %d", i, this.hand.get(i).chip.GetChipData()));
-		}
-	}
-	
-	
-	private void Initialize(List<PlayerDeckEntry> deckEntries) {
+	private void initialize(List<PlayerDeckEntry> deckEntries) {
 		// Go through all deckEntries to create a deck
 		for (int i = 0; i < deckEntries.size(); i++) {
 			// For every copy create a PrivateDeckEntry
@@ -52,11 +39,11 @@ public class Deck {
 		// draw cards
 		int handSize = 4;
 		for (int j = 0; j < handSize; j++) {
-			Draw();
+			draw();
 		}
 	}
 	
-	public boolean IsChipInHand(short chipId) {
+	public boolean isChipInHand(short chipId) {
 		for (int i = 0; i < this.hand.size(); i++) {
 			if (hand.get(i).chip.GetChipData() == chipId) {
 				return true;
@@ -65,19 +52,19 @@ public class Deck {
 		return false;
 	}
 	
-	public short PlayChipAndReturnNext(short chipId) {
-		ReturnChip(chipId);
-		return Draw();
+	public short playChipAndReturnNext(short chipId) {
+		returnChip(chipId);
+		return draw();
 	}
 	
-	public short Draw() {
+	public short draw() {
 		PrivateDeckEntry drawnChip = this.deck.get(0);
 		this.deck.remove(0);
 		hand.add(drawnChip);
 		return drawnChip.chip.GetChipData();
 	}
 	
-	public void ReturnChip(short chipId) {
+	public void returnChip(short chipId) {
 		// find the first chip in hand that has the chip id and return it to the deck
 		int idxToRemove = -1;
 		for (int i = 0; i < this.hand.size(); i++) {
@@ -91,7 +78,7 @@ public class Deck {
 		this.deck.add(returnedChip);
 	}
 	
-	public short[] GetChipIdsInHand() {
+	public short[] getChipIdsInHand() {
 		short[] cids = new short[4];
 		for (int i = 0; i < this.hand.size(); i++ ) {
 			cids[i] = this.hand.get(i).chip.GetChipData();
@@ -106,4 +93,20 @@ public class Deck {
 			this.chip = chip;
 		}
 	}
+	
+	
+	
+	public void debugPrint() {
+		SFSExtension ext = (SFSExtension) SmartFoxServer.getInstance().getZoneManager().getZoneByName("BattleNetwork").getExtension();
+		
+		for (int i = 0; i < this.deck.size(); i++) {
+			ext.trace(String.format("Deck: Pos: %d => chipId: %d", i, this.deck.get(i).chip.GetChipData()));
+		}
+		
+		for (int i = 0; i < this.hand.size(); i++) {
+			ext.trace(String.format("Hand: Pos: %d => chipId: %d", i, this.hand.get(i).chip.GetChipData()));
+		}
+	}
+	
+	
 }

@@ -22,7 +22,7 @@ public class Missile extends Chip {
 			JSONObject projectileJson = projectiles.getJSONObject(i);
 			int pid = projectileJson.getInt(GameData.ProjectileDataKeys.ID);
 					
-			this.game.SpawnProjectile(player, pid);
+			this.game.spawnProjectile(player, pid);
 		}
 	}
 	

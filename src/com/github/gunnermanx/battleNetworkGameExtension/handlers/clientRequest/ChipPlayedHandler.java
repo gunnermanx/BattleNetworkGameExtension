@@ -25,12 +25,7 @@ public class ChipPlayedHandler extends BaseClientRequestHandler {
 		short cid = params.getShort("cid");	// direction
 		
 		// assumption: all chips have some kind of target, or originates from player unit, or set locations
-		
-		// projectile is on a tile for a certain number of ticks
-		// ie 
-		//  tick  [n, n+10] on tile A
-		//	tick  [n+11, n+20] on tile B
-		
+
 		
 		// Validation checks on concepts OUTSIDE of BattleNetworkGame
 		// eg: is the chip actually in this player's deck?
@@ -51,7 +46,7 @@ public class ChipPlayedHandler extends BaseClientRequestHandler {
 		}
 		
 		// the chip id
-		ext.Game().PlayChip(user.getPlayerId(), cid);
+		ext.Game().playChip(user.getPlayerId(), cid);
 	}
 
 }
