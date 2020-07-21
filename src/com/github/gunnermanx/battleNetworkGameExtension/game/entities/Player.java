@@ -3,6 +3,7 @@ package com.github.gunnermanx.battleNetworkGameExtension.game.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerDeckEntry;
 import com.smartfoxserver.v2.entities.User;
@@ -11,11 +12,11 @@ public class Player {
 	public int id;
 	public User user;
 	public int energy = 0;
-	public Arena.Ownership owner;
+	public Owner owner;
 	public Unit unit;
 	public Deck deck;
 	
-	public Player(int id, User user, Arena.Ownership owner) {
+	public Player(int id, User user, Owner owner) {
 		this.id = id;
 		this.user = user;
 		this.energy = 0;

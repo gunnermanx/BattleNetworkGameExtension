@@ -17,8 +17,8 @@ public class Cannon extends Chip {
 		
 		int damage = 30; // get from json
 		
-		Unit target = game.arena.GetFirstEnemyUnitInRow(player.owner, this.playerX, this.playerY);
-		this.game.arena.DamageUnit(target, damage);		
+		Unit target = game.getFirstEnemyUnitInRow(player.owner, this.playerX, this.playerY);
+		this.game.damageUnit(target, damage);		
 	}
 	
 	@Override

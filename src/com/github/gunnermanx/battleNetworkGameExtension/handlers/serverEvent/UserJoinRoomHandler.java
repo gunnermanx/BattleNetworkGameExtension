@@ -19,7 +19,7 @@ public class UserJoinRoomHandler extends BaseServerEventHandler {
 		ext.trace(String.format("id:%d, name:%s, property:%s", user.getId(), user.getName(), user.getPlayerId(), test));
 		
 		if (user.isPlayer() && !ext.IsGameStarted()) {
-			ext.Game().CreatePlayer(user);
+			ext.Game().createPlayer(user);
 			
 			if (ext.getParentRoom().getPlayersList().size() == 2) {	
 				ext.trace("Calling PlayersPresent");

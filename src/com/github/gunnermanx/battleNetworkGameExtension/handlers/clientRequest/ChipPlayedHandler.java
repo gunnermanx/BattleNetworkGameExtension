@@ -51,7 +51,7 @@ public class ChipPlayedHandler extends BaseClientRequestHandler {
 		}
 		
 		// the chip id
-		ext.Game().PlayChip(user.getPlayerId(), cid);
+		ext.Game().playChip(user.getPlayerId(), cid);
 	}
 
 }

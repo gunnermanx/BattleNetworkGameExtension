@@ -20,7 +20,7 @@ public class BasicAttackHandler extends BaseClientRequestHandler {
 		
 		trace("basic attack received from client");
 		
-		ext.Game().PlayerBasicAttack(user.getPlayerId());		
+		ext.Game().playerBasicAttack(user.getPlayerId());		
 	}
 
 }

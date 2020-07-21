@@ -27,7 +27,7 @@ public class MovementHandler extends BaseClientRequestHandler {
 			
 		//trace(String.format("ClientRequest 'move', id: %d, dir: %s", id, dir));
 		
-		ext.Game().MovePlayer(user.getPlayerId(), dir);				
+		ext.Game().movePlayer(user.getPlayerId(), dir);				
 	}
 
 	

@@ -4,16 +4,18 @@ import java.util.Collection;
 import java.util.EventListener;
 import java.util.HashSet;
 
+import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
+
 public class Unit {
 	public int id;
-	public Arena.Ownership owner;
+	public Owner owner;
 	public String type;
 	public int posX, posY;
 	private int hitpoints;
 	
 	private Collection<UnitDamagedListener> listeners = new HashSet<>();
 	
-	public Unit(int id, Arena.Ownership owner, String type, int posX, int posY, int hitpoints) {
+	public Unit(int id, Owner owner, String type, int posX, int posY, int hitpoints) {
 		this.id = id;
 		this.owner = owner;
 		this.type = type;

@@ -159,7 +159,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void OnGameTick() {
 		synchronized(this) {
 			// Let the game sim the current tick
-			game.HandleTick(currentTick);
+			game.handleTick(currentTick);
 					
 			// We want to buffer some commands
 			if (currentTick == lastUpdatedTick + TICK_BUFFER_SIZE) {
