@@ -2,7 +2,6 @@ package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import javax.persistence.EntityManager;
 
-import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.core.ISFSEvent;

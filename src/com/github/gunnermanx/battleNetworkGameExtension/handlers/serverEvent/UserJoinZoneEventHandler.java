@@ -8,7 +8,6 @@ import javax.persistence.EntityManager;
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkZoneExtension;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerChip;
-import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerDeckEntry;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.SmartFoxServer;
 import com.smartfoxserver.v2.api.ISFSApi;

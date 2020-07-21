@@ -17,10 +17,6 @@ public class Tile {
 		BROKEN(1),
 		OCCUPIED(2);
 		
-		private int val;
-		
-		private State(int id) {
-			this.val = id;
-		}		
+		private State(int id) {}		
 	}
 }

@@ -422,10 +422,6 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		PLAYER1(1),
 		PLAYER2(2);
 		
-		private int val;
-		
-		private Owner(int val) {
-			this.val = val;
-		}		
+		private Owner(int val) {}
 	}
 }
