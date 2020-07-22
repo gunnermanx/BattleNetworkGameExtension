@@ -52,9 +52,12 @@ public class Deck {
 		return false;
 	}
 	
-	public short playChipAndReturnNext(short chipId) {
+	public short[] playChipAndReturnNext(short chipId) {
 		returnChip(chipId);
-		return draw();
+		short[] res = new short[2];
+		res[0] = draw();
+		res[1] = getTopCidInDeck();
+		return res;
 	}
 	
 	public short draw() {
@@ -84,6 +87,10 @@ public class Deck {
 			cids[i] = this.hand.get(i).chip.GetChipData();
 		}
 		return cids;
+	}
+	
+	public short getTopCidInDeck() {
+		return this.deck.get(0).chip.GetChipData();
 	}
 	
 	private class PrivateDeckEntry {

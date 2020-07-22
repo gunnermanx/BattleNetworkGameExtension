@@ -198,14 +198,14 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				player1 = new Player(id, user, Owner.PLAYER1);
 				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
 				player1.unit.registerUnitDamagedListener(this);
-				this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand());
+				this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
 				player2 = new Player(id, user, Owner.PLAYER2);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
 				player2.unit.registerUnitDamagedListener(this);
-				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand());
+				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
 			}
 		}
 	}
@@ -275,8 +275,8 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				return;
 			}
 			
-			short nextCid = player.playChipAndGetNext(cid);
-			this.ext.QueueChipDrawn(nextCid);
+			short[] res = player.playChipAndGetNext(cid);
+			this.ext.QueueChipDrawn(res[0], res[1]);
 			
 			player.energy -= chipCost;
 			this.ext.QueueEnergyChanged(0, playerId, -chipCost);

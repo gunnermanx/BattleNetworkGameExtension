@@ -203,7 +203,7 @@ public class BattleNetworkExtension extends SFSExtension {
 		this.send(PLAYER_VICTORY, payload, Arrays.asList(game.player1.user, game.player2.user));
 	}
 	
-	public void SendChipHandInit(User user, short[] cids) {
+	public void SendChipHandInit(User user, short[] cids, short cidNext) {
 		SFSObject payload = new SFSObject();
 		SFSArray chips = new SFSArray();
 		chips.addShort(cids[0]);
@@ -211,6 +211,7 @@ public class BattleNetworkExtension extends SFSExtension {
 		chips.addShort(cids[2]);
 		chips.addShort(cids[3]);
 		payload.putSFSArray("chips", chips);
+		payload.putShort("next", cidNext);
 		this.send(HAND_INIT, payload, user);		
 	}
 	
@@ -236,8 +237,8 @@ public class BattleNetworkExtension extends SFSExtension {
 		QueueCommand(sp);
 	}
 	
-	public void QueueChipDrawn(short cid) {
-		Command cd = new ChipDrawnCommand(cid);
+	public void QueueChipDrawn(short cid, short cidNext) {
+		Command cd = new ChipDrawnCommand(cid, cidNext);
 		QueueCommand(cd);
 	}
 	

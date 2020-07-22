@@ -49,7 +49,7 @@ public class Player {
 		return this.deck.isChipInHand(chipId); 
 	}
 	
-	public short playChipAndGetNext(short chipId) {
+	public short[] playChipAndGetNext(short chipId) {
 		return this.deck.playChipAndReturnNext(chipId);
 	}
 }
