@@ -198,17 +198,18 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				player1 = new Player(id, user, Owner.PLAYER1);
 				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
 				player1.unit.registerUnitDamagedListener(this);
-				this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
+				//this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
 				player2 = new Player(id, user, Owner.PLAYER2);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
 				player2.unit.registerUnitDamagedListener(this);
-				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());
+				//this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());
 			}
 		}
 	}
+	
 	
 	public Unit spawnPlayerUnit(Owner owner, String type, int posX, int posY) {		
 		// TEMPORARY

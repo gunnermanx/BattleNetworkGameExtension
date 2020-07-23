@@ -20,6 +20,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.commands.SpawnProje
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.BasicAttackHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.ChipPlayedHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.MovementHandler;
+import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.PlayerReadyToReceiveHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserJoinRoomHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserLeaveRoomHandler;
 import com.smartfoxserver.v2.core.SFSEventType;
@@ -84,6 +85,7 @@ public class BattleNetworkExtension extends SFSExtension {
 		// TODO handle disconnects and leaves
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserLeaveRoomHandler.class);
 		
+		addRequestHandler("pr", PlayerReadyToReceiveHandler.class);
 		addRequestHandler("m", MovementHandler.class);
 		addRequestHandler("ba", BasicAttackHandler.class);
 		addRequestHandler("ch", ChipPlayedHandler.class);
