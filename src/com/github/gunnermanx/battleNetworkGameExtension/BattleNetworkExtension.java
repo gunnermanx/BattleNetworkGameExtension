@@ -206,6 +206,9 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 	public void SendChipHandInit(User user, short[] cids, short cidNext) {
+		
+		this.trace(String.format("SENDING HAND TO PLAYER %d: [%d,%d,%d,%d]", user.getPlayerId(), cids[0], cids[1], cids[2], cids[3] ));
+		
 		SFSObject payload = new SFSObject();
 		SFSArray chips = new SFSArray();
 		chips.addShort(cids[0]);

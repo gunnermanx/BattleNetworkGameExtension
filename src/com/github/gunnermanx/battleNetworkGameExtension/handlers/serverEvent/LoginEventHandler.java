@@ -1,7 +1,10 @@
 package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
+import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkZoneExtension;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.core.ISFSEvent;
@@ -16,8 +19,10 @@ public class LoginEventHandler extends BaseServerEventHandler
 {
     private final EntityManager em;
  
-    public LoginEventHandler(EntityManager em) {
-        this.em = em;
+    public LoginEventHandler() {
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(BattleNetworkZoneExtension.PERSISTENCE_NAME);		
+        this.em = emf.createEntityManager();
+        
     }
  
     @Override

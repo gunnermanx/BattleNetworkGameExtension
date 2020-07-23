@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkZoneExtension;
 import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAccount;
@@ -25,13 +27,7 @@ public class UserJoinZoneEventHandler extends BaseServerEventHandler {
 	private final String LEVEL = "level";
 	private final String XP = "xp";
 	private final String POINTS = "points";
-	
-	private final EntityManager em;
 	 
-    public UserJoinZoneEventHandler(EntityManager em) {
-        this.em = em;
-    }
-	
 	@Override
 	public void handleServerEvent(ISFSEvent evt) throws SFSException {
 		

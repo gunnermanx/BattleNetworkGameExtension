@@ -205,7 +205,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				player2 = new Player(id, user, Owner.PLAYER2);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
 				player2.unit.registerUnitDamagedListener(this);
-				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
+				this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());
 			}
 		}
 	}
