@@ -9,6 +9,8 @@ public abstract class Command {
 	public static final byte ENERGY_CHANGED_COMMAND_ID = (byte) 2;
 	public static final byte SPAWN_PROJECTILE_COMMAND_ID = (byte) 3;
 	public static final byte CHIP_DRAWN_COMMAND_ID = (byte) 4;
+	public static final byte CHIP_PLAYED_COMMAND_ID = (byte) 5;
+	public static final byte BASIC_ATTACK_COMMAND_ID = (byte) 6;
 	
 	public abstract SFSArray Serialize();
 }

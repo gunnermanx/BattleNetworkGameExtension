@@ -275,6 +275,8 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				return;
 			}
 			
+			this.ext.QueueChipPlayed(playerId, cid);
+			
 			short[] res = player.playChipAndGetNext(cid);
 			this.ext.QueueChipDrawn(res[0], res[1]);
 			
@@ -339,7 +341,9 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		int basicAttackDmg = 1;
 		
 		Unit target = getFirstEnemyUnitInRow(player.owner, player.unit.posX, player.unit.posY);
-		damageUnit(target, basicAttackDmg);		
+		damageUnit(target, basicAttackDmg);
+		
+		this.ext.QueueBasicAttack(playerId);
 	}
 	
 	
@@ -349,9 +353,6 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			this.ext.QueueDamageDealt(target.id, damage);
 		}
 	}
-	
-	
-	
 	
 	private Player getPlayer(int id) {
 		if (id == 1) {

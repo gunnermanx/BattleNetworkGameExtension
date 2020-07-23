@@ -9,7 +9,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame;
 import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
+import com.github.gunnermanx.battleNetworkGameExtension.game.commands.BasicAttackCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.ChipDrawnCommand;
+import com.github.gunnermanx.battleNetworkGameExtension.game.commands.ChipPlayedCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.Command;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.DamageDealtCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.EnergyChangedCommand;
@@ -237,9 +239,19 @@ public class BattleNetworkExtension extends SFSExtension {
 		QueueCommand(sp);
 	}
 	
+	public void QueueChipPlayed(int playerId, short cid) {
+		Command cp = new ChipPlayedCommand(playerId, cid);
+		QueueCommand(cp);
+	}
+	
 	public void QueueChipDrawn(short cid, short cidNext) {
 		Command cd = new ChipDrawnCommand(cid, cidNext);
 		QueueCommand(cd);
+	}
+	
+	public void QueueBasicAttack(int playerId) {
+		Command ba = new BasicAttackCommand(playerId);
+		QueueCommand(ba);
 	}
 	
 	
