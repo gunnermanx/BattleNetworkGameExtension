@@ -395,24 +395,28 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			endY = Math.max(rowY+1, ARENA_WIDTH-1);
 		}
 		
-		this.ext.trace(String.format("getUnitsInRange: Checking startingY %d, endingY %d", startY, endY));
+//		this.ext.trace(String.format("getUnitsInRange: Checking startingY %d, endingY %d", startY, endY));
 		
 		for (int y = startY; y <= endY; y++) {
 			if (owner == Owner.PLAYER1) {
-				int endX = Math.min(rowX + depth, ARENA_LENGTH);			
-			    for (int x = rowX; x < endX; x++) {
-			    	this.ext.trace(String.format("getUnitsInRange: Checking for player1, [%d,%d]", x, y));
+				int endX = Math.min(rowX + depth, ARENA_LENGTH);
+//				this.ext.trace(String.format("getUnitsInRange: Checking startingX %d, endingX %d", rowX, endX));
+			    for (int x = rowX; x <= endX; x++) {
+//			    	this.ext.trace(String.format("getUnitsInRange: Checking for player1, [%d,%d]", x, y));
 			    	Unit u = units[x][y];
 			    	if (u != null && u.owner != owner) {
+//			    		this.ext.trace(String.format("found target %d", u.id));
 			    		targets.add(u);
 			    	}
 			    }
 			} else if (owner == Owner.PLAYER2) {
 				int endX = Math.max(rowX - depth, 0);
+//				this.ext.trace(String.format("getUnitsInRange: Checking startingX %d, endingX %d", rowX, endX));
 				for (int x = rowX; x >= endX; x--) {
 					Unit u = units[x][y];
-					this.ext.trace(String.format("getUnitsInRange: Checking for player2, [%d,%d]", x, y));
+//					this.ext.trace(String.format("getUnitsInRange: Checking for player2, [%d,%d]", x, y));
 					if (u != null && u.owner != owner) {
+//						this.ext.trace(String.format("found target %d", u.id));
 						targets.add(u);
 			    	}
 			    }
@@ -425,7 +429,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	public Unit getFirstEnemyUnitInRow(Owner owner, int rowX, int rowY) {
 		
 		if (owner == Owner.PLAYER1) {
-			this.ext.trace("Checking for player1, starting %d, ending %d", rowX, ARENA_LENGTH);
+			//this.ext.trace(String.format("Checking for player1, starting %d, ending %d", rowX, ARENA_LENGTH));
 		    for (int x = rowX; x < ARENA_LENGTH; x++) {
 		    	Unit u = units[x][rowY];
 		    	if (u != null && u.owner != owner) {
@@ -433,7 +437,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		    	}
 		    }
 		} else if (owner == Owner.PLAYER2) {
-			this.ext.trace("Checking for player2, starting %d, ending %d", rowX, ARENA_LENGTH);
+			//this.ext.trace(String.format("Checking for player2, starting %d, ending %d", rowX, ARENA_LENGTH));
 			for (int x = rowX; x >= 0; x--) {
 				Unit u = units[x][rowY];
 				if (u != null && u.owner != owner) {
