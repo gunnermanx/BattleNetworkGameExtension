@@ -249,8 +249,8 @@ public class BattleNetworkExtension extends SFSExtension {
 		QueueCommand(cp);
 	}
 	
-	public void QueueChipDrawn(short cid, short cidNext) {
-		Command cd = new ChipDrawnCommand(cid, cidNext);
+	public void QueueChipDrawn(int playerId, short cid, short cidNext) {
+		Command cd = new ChipDrawnCommand(playerId, cid, cidNext);
 		QueueCommand(cd);
 	}
 	

@@ -279,7 +279,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			this.ext.QueueChipPlayed(playerId, cid);
 			
 			short[] res = player.playChipAndGetNext(cid);
-			this.ext.QueueChipDrawn(res[0], res[1]);
+			this.ext.QueueChipDrawn(playerId, res[0], res[1]);
 			
 			player.energy -= chipCost;
 			this.ext.QueueEnergyChanged(0, playerId, -chipCost);
