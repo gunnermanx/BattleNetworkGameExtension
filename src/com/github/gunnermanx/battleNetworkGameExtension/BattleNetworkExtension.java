@@ -16,7 +16,6 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.commands.Command;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.DamageDealtCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.EnergyChangedCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.MoveCommand;
-import com.github.gunnermanx.battleNetworkGameExtension.game.commands.SpawnProjectileCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.BasicAttackHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.ChipPlayedHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.MovementHandler;
@@ -237,11 +236,6 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void QueueDamageDealt(int id, int damage) {
 		Command dd = new DamageDealtCommand(id, damage);
 		QueueCommand(dd);
-	}
-	
-	public void QueueSpawnProjectile(int playerId, int cid) {
-		Command sp = new SpawnProjectileCommand(playerId, cid);
-		QueueCommand(sp);
 	}
 	
 	public void QueueChipPlayed(int playerId, short cid) {

@@ -2,7 +2,10 @@ package com.github.gunnermanx.battleNetworkGameExtension.game.chips;
 
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame;
 import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
+import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Player;
+import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
+import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.StraightProjectile;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -16,14 +19,20 @@ public class Missile extends Chip {
 
 	@Override
 	public void Init() {
-		// For each projectile listed, we want to spawn it
-		JSONArray projectiles = this.chipJSON.getJSONArray(GameData.ChipDataKeys.PROJECTILES);
-		for (int i = 0; i < projectiles.size(); i++) {
-			JSONObject projectileJson = projectiles.getJSONObject(i);
-			int pid = projectileJson.getInt(GameData.ProjectileDataKeys.ID);
-					
-			this.game.spawnProjectile(player, pid);
-		}
+		// Get data for chip
+		JSONArray data = this.chipJSON.getJSONArray(GameData.ChipDataKeys.DATA);
+		
+		// TODO, gotta grab the level data from db somewhere before creating the chip
+		int level = 1;
+		// Get the data for the particular level of the chip
+		JSONObject dataForLevel = data.getJSONObject(level);		
+		int speed = dataForLevel.getInt(GameData.ChipDataKeys.PROJECTILE_SPEED);
+		int damage = dataForLevel.getInt(GameData.ChipDataKeys.DAMAGE);
+		
+		Projectile p = new StraightProjectile(this.player.owner, speed, damage, this.playerX, this.playerY);
+		
+		this.game.spawnProjectile(player, p);
+		
 	}
 	
 	@Override

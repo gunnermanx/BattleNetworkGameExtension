@@ -23,9 +23,6 @@ public class GameData {
 			String chipJsonStr = new String(readAllBytes(get(baseDir + "./chips.json")));
 			this.chips = JSONObject.fromObject(chipJsonStr);
 			
-			String projectileJsonStr = new String(readAllBytes(get(baseDir + "./projectiles.json")));
-			this.projectiles = JSONObject.fromObject(projectileJsonStr);
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,11 +40,6 @@ public class GameData {
 	}
 	
 	
-	public boolean IsValidProjectileId(int projectileId) {
-		String projectileIdStr = Integer.toString(projectileId);
-		return projectiles.has(projectileIdStr);
-	}
-	
 	public JSONObject GetProjectileData(int projectileId) {
 		String projectileIdStr = Integer.toString(projectileId);
 		return projectiles.getJSONObject(projectileIdStr);	
@@ -55,15 +47,11 @@ public class GameData {
 	
 	public class ChipDataKeys {
 		public static final String COST = "cost";
-		public static final String PROJECTILES = "projectiles";
-	}
-	
-	public class ProjectileDataKeys {
-		public static final String ID = "id";
-		public static final String TYPE = "type";
-		public static final String SPEED = "speed";
+		public static final String DATA = "data";
+		public static final String PROJECTILE_SPEED = "projectileSpeed";
 		public static final String DAMAGE = "damage";
 	}
+	
 	
 	// cannons
 	// shots/guns
