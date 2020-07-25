@@ -26,8 +26,10 @@ public class Sword extends Chip {
 		// Get the data for the particular level of the chip
 		JSONObject dataForLevel = data.getJSONObject(level);
 		int damage = dataForLevel.getInt(GameData.ChipDataKeys.DAMAGE);
+		int depth = dataForLevel.getInt(GameData.ChipDataKeys.DEPTH);
+		int width = dataForLevel.getInt(GameData.ChipDataKeys.WIDTH);
 				
-		List<Unit> targets = game.getUnitsInRange(player.owner, this.playerX, this.playerY, 1, 1);
+		List<Unit> targets = game.getUnitsInRange(player.owner, this.playerX, this.playerY, width, depth);
 		
 		for (int i = 0; i < targets.size(); i++) {
 			this.game.damageUnit(targets.get(i), damage);

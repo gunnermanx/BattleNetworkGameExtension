@@ -37,14 +37,6 @@ public class ChipPlayedHandler extends BaseClientRequestHandler {
 			return;
 		}		
 		
-		// do some validation of whether the card is in that players deck...
-		boolean inDeck = true;
-		if (!inDeck) {
-			// logs?
-			// error?
-			return;
-		}
-		
 		// the chip id
 		ext.Game().playChip(user.getPlayerId(), cid);
 	}

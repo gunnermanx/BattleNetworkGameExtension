@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.MatchmakingRequestHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.PlayerReadyToReceiveHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.LoginEventHandler;
@@ -28,10 +29,14 @@ public class BattleNetworkZoneExtension extends SFSExtension {
     private EntityManagerFactory emf;
     private EntityManager em;
     
+    private GameData gameData;
+    
 	public CopyOnWriteArrayList<User> matchmakingUsers;
 	
 	@Override
 	public void init() {
+		gameData = new GameData(this);
+		
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_NAME);
 		em = emf.createEntityManager();
 		
@@ -47,6 +52,10 @@ public class BattleNetworkZoneExtension extends SFSExtension {
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
 		initDatabase();
+	}
+	
+	public GameData GetGameData() {
+		return this.gameData;
 	}
 	
 	private void initDatabase()

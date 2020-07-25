@@ -364,7 +364,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		}
 	}
 	
-	private Player getPlayer(int id) {
+	public Player getPlayer(int id) {
 		if (id == 1) {
 			return player1;
 		} else if (id == 2) {

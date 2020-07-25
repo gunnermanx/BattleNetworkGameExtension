@@ -73,7 +73,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void init() {
 		trace("BattleNetworkExtension started");
 				
-		gameData = new GameData(this);		
+		gameData = ((BattleNetworkZoneExtension) this.getParentZone().getExtension()).GetGameData();		
 		
 		// TODO Send data about each player, maybe basic unit data? payload		
 		game = new BattleNetworkGame(this);

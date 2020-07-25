@@ -1,9 +1,43 @@
 {
   "0": {
+    "name": "Missile_Chip",
     "cost": 2,
-    "projectiles": [
-      { 
-        "id": 0 
+    "data": [
+      {
+        "projectileSpeed": 5,
+        "damage": 8
+      },
+      {
+        "projectileSpeed": 5,
+        "damage": 8
+      }
+    ]
+  },
+  "1": {
+    "name": "Cannon_Chip",
+    "cost": 1,
+    "data": [
+      {      
+        "damage": 5
+      },
+      {
+        "damage": 5
+      }
+    ]
+  },
+  "2": {
+    "name": "Sword_Chip",
+    "cost": 2,
+    "data": [
+      {    
+        "width": 1,
+        "depth": 2,
+        "damage": 13
+      },
+      {
+        "width": 1,
+        "depth": 2,
+        "damage": 13
       }
     ]
   }
