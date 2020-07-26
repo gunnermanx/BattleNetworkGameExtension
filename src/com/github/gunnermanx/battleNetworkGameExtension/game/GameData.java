@@ -31,7 +31,7 @@ public class GameData {
 			//String chipJsonStr = new String(readAllBytes(get(baseDir + "./chips.json")));
 			this.chips = JSONObject.fromObject(chipJsonStr);
 			
-			this.ext.trace("LOADED GAME DATA FROM URL");
+			//this.ext.trace("LOADED GAME DATA FROM URL");
 			
 		} catch (IOException e) {
 			e.printStackTrace();

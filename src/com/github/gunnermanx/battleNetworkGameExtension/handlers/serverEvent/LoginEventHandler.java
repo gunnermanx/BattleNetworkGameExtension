@@ -17,12 +17,10 @@ import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
 public class LoginEventHandler extends BaseServerEventHandler
 {
-    private final EntityManager em;
+    private final EntityManagerFactory emf;
  
-    public LoginEventHandler() {
-    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(BattleNetworkZoneExtension.PERSISTENCE_NAME);		
-        this.em = emf.createEntityManager();
-        
+    public LoginEventHandler(EntityManagerFactory emf) {		
+        this.emf = emf;
     }
  
     @Override
@@ -36,26 +34,30 @@ public class LoginEventHandler extends BaseServerEventHandler
     	
     	// Query the db
     	try {
+    		EntityManager em = emf.createEntityManager();
+    		
     		PlayerAuth pa = em.createQuery("SELECT pa FROM PlayerAuth pa WHERE pa.username = ?1", PlayerAuth.class)
 		    	.setParameter(1, username)
 		    	.getSingleResult();
     		
     		// Successful login
     		if (getApi().checkSecurePassword(session, pa.GetSecret(), password)) {
-    			session.setProperty("account", pa.GetAccount());
-    			return;
+    			session.setProperty("account", pa.GetAccount().GetId());    			
+    		} else {
+    			// Create the error code that will be sent to the client and raise the exception
+                errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
+                errData.addParameter(username);
     		}
     		
-    		// Create the error code that will be sent to the client and raise the exception
-            errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
-            errData.addParameter(username);
+            em.close();
                     		
     	} catch (Exception e) {    		
             errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
             errData.addParameter(username);
     	}
     	
-    	
-    	throw new SFSLoginException("LoginError", errData);
+    	if (errData != null) {
+    		throw new SFSLoginException("LoginError", errData);
+    	}    	
     }
 }

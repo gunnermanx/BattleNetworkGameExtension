@@ -47,11 +47,13 @@ public class BattleNetworkZoneExtension extends SFSExtension {
 		
 		addRequestHandler("matchmaking", MatchmakingRequestHandler.class);
 				
-        addEventHandler(SFSEventType.USER_LOGIN, new LoginEventHandler());
-        addEventHandler(SFSEventType.USER_JOIN_ZONE, UserJoinZoneEventHandler.class);
+        addEventHandler(SFSEventType.USER_LOGIN, new LoginEventHandler(emf));
+        addEventHandler(SFSEventType.USER_JOIN_ZONE, new UserJoinZoneEventHandler(emf));
 		addEventHandler(SFSEventType.USER_DISCONNECT, UserDisconnectHandler.class);
 		
 		initDatabase();
+		
+		em.close();
 	}
 	
 	public GameData GetGameData() {

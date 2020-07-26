@@ -26,12 +26,11 @@ public class Player {
 	}
 	
 	private void initializeDeck() {
-		PlayerAccount acc = (PlayerAccount) this.user.getProperty("account");
+		List<PlayerDeckEntry> playerDeckEntries = (List<PlayerDeckEntry>) this.user.getProperty("deckEntries");
 		
 		// assume for now active deck is 1;
 		short activeDeckId = 1;
 		
-		List<PlayerDeckEntry> playerDeckEntries = acc.GetPlayerDeckEntries();
 		List<PlayerDeckEntry> activeDeck = new ArrayList<PlayerDeckEntry>();
 		for (int i = 0; i < playerDeckEntries.size(); i++) {
 			if (playerDeckEntries.get(i).GetDeckId() == activeDeckId) {

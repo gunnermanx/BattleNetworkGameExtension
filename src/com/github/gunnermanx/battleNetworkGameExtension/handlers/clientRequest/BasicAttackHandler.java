@@ -17,9 +17,6 @@ public class BasicAttackHandler extends BaseClientRequestHandler {
 		if (!ext.IsGameStarted()) {
 			return;
 		}
-		
-		trace("basic attack received from client");
-		
 		ext.Game().playerBasicAttack(user.getPlayerId());		
 	}
 

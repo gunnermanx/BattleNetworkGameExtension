@@ -185,7 +185,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				Unit u = units[p.posX][p.posY];
 				if (u != null && u.owner != p.owner) {	
 					
-					this.ext.trace("hit!");
+					//this.ext.trace("hit!");
 					//this.ext.trace(String.format("  Hit with projectile %d!", p.toString()));
 											
 					u.damage(p.damage);
@@ -215,7 +215,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		// TODO see if there are reconnection issues
 		int id = user.getPlayerId();
 		
-		this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
+		//this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
 		
 		if (id == 1) {
 			if (player1 == null) {

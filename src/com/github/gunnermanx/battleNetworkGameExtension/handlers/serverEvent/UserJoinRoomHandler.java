@@ -14,14 +14,11 @@ public class UserJoinRoomHandler extends BaseServerEventHandler {
 		BattleNetworkExtension ext = (BattleNetworkExtension) getParentExtension();		
 		User user = (User) event.getParameter(SFSEventParam.USER);
 		
-		String test = (String) user.getSession().getProperty("test");
-		ext.trace(String.format("id:%d, name:%s, property:%s", user.getId(), user.getName(), user.getPlayerId(), test));
-		
 		if (user.isPlayer() && !ext.IsGameStarted()) {
 			ext.Game().createPlayer(user);
 			
 			if (ext.getParentRoom().getPlayersList().size() == 2) {	
-				ext.trace("Calling PlayersPresent");
+				//ext.trace("Calling PlayersPresent");
 				ext.PlayersPresent();
 			}
 		}	
