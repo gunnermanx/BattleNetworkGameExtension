@@ -42,7 +42,7 @@ public class MatchmakingRequestHandler extends BaseClientRequestHandler {
 				.and("rank", NumberMatch.LESS_THAN, 10);
 		List<User> matchedUser = sfsApi.findUsers(ext.matchmakingUsers, expr, 1);		
 		if (matchedUser.size() > 0) {
-			ext.trace(String.format("Found a match for user %s, matched with %s", user.getName(), matchedUser.get(0).getName()));
+			//ext.trace(String.format("Found a match for user %s, matched with %s", user.getName(), matchedUser.get(0).getName()));
 			
 			// we found a user, lets remove the user from the matchmaking list
 			ext.matchmakingUsers.remove(matchedUser.get(0));
@@ -72,12 +72,12 @@ public class MatchmakingRequestHandler extends BaseClientRequestHandler {
 			}
 		} else {
 			// couldnt find a match so add user to matchmakingUsers
-			ext.trace(String.format("Couldn't find a match for user %s", user.getName()));
+			//ext.trace(String.format("Couldn't find a match for user %s", user.getName()));
 			ext.matchmakingUsers.add(user);
 			
-			for (int i = 0; i < ext.matchmakingUsers.size(); i++) {
-				ext.trace(String.format("    user: %s", ext.matchmakingUsers.get(i).getName()));
-			}
+//			for (int i = 0; i < ext.matchmakingUsers.size(); i++) {
+//				ext.trace(String.format("    user: %s", ext.matchmakingUsers.get(i).getName()));
+//			}
 		}
 			
 	}

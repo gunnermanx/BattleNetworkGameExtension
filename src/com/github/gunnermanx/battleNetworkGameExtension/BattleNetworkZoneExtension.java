@@ -10,7 +10,6 @@ import javax.persistence.Query;
 
 import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.MatchmakingRequestHandler;
-import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.PlayerReadyToReceiveHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.LoginEventHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserDisconnectHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent.UserJoinZoneEventHandler;

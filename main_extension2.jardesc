@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="D:/SmartFoxServer_2X/SFS2X/extensions/BattleNetwork/BattleNetworkExtension.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/BattleNetworkGameExtension/main_extension.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <jar path="D:/SmartFoxServer_2X/SFS2X/extensions/__lib__/BattleNetworkExtension.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/BattleNetworkGameExtension/main_extension2.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
