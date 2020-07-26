@@ -2,7 +2,6 @@ package com.github.gunnermanx.battleNetworkGameExtension.game.chips;
 
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame;
 import com.github.gunnermanx.battleNetworkGameExtension.game.GameData;
-import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Player;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.StraightProjectile;

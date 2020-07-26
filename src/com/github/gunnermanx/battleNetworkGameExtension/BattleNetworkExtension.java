@@ -62,12 +62,16 @@ public class BattleNetworkExtension extends SFSExtension {
 	private int currentTick = 0;
 	private static final int TICK_BUFFER_SIZE = 1;
 	
-	private boolean gameStarted;	
+	
 	private BattleNetworkGame game;
 	
 	private GameData gameData;
 	
 	private ScheduledFuture<?> tickerTaskHandle;
+	
+	private boolean tickerStarted;
+	
+	private boolean gameStarted;
 	
 	@Override
 	public void init() {
@@ -99,24 +103,23 @@ public class BattleNetworkExtension extends SFSExtension {
     }
 	
 	public void PlayersPresent() {
-		this.getApi().getSystemScheduler().schedule(new Runnable() {
-			@Override
-			public void run() {
-				StartGame();
-			}
-		}, 2, TimeUnit.SECONDS);		
+//		this.getApi().getSystemScheduler().schedule(new Runnable() {
+//			@Override
+//			public void run() {
+//				StartGameTicker();
+//			}
+//		}, 2, TimeUnit.SECONDS);	
+		
+		StartGameTicker();
 	}
 	
-	public void StartGame() {
+	public void StartGameTicker() {
 		synchronized(this) {
-			if (!gameStarted && tickerTaskHandle == null) {
+			if (!tickerStarted && tickerTaskHandle == null) {
 				// start the game ticker
 				
 				// initializing the commands list
-				this.trace("INIT THE COMMANDS AT 0 ");
 				commands.add(currentTick, new CopyOnWriteArrayList<Command>());
-
-				this.trace("STARTING THE TICKER /// STARTING THE TICKER ");
 				
 				tickerTaskHandle = this.getApi().getSystemScheduler().scheduleAtFixedRate(
 					new GameTicker(this), 
@@ -125,7 +128,7 @@ public class BattleNetworkExtension extends SFSExtension {
 					TimeUnit.MILLISECONDS
 				);
 							
-				gameStarted = true;
+				tickerStarted = true;
 			}
 		}
 	}
@@ -161,6 +164,11 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	public void OnGameTick() {
 		synchronized(this) {
+			// check if the game is "started"
+			if (!gameStarted && currentTick >= BattleNetworkGame.ROUND_START_TICK) {
+				gameStarted = true;
+			}
+			
 			// Let the game sim the current tick
 			game.handleTick(currentTick);
 					
@@ -176,6 +184,18 @@ public class BattleNetworkExtension extends SFSExtension {
 			// After sending out the commands, update the tick and create the command list
 			currentTick++;
 			commands.add(currentTick, new CopyOnWriteArrayList<Command>());
+			
+			// Check to see if the game is ended 
+			if (gameStarted && currentTick >= BattleNetworkGame.ROUND_END_TICK) {
+				gameStarted = false;
+				// trigger game ended
+				// TODO: need a tieing case
+				if (game.player1.unit.currentHP() >= game.player2.unit.currentHP()) {
+					QueuePlayerVictory(1);
+				} else {
+					QueuePlayerVictory(2);
+				}
+			}
 		}		
 	}
 
@@ -255,7 +275,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	
 	
-	private void QueueCommand(Command c) {
+	private void QueueCommand(Command c) {		
 		CopyOnWriteArrayList<Command> tickCommandList = commands.get(currentTick);
 		if (tickCommandList != null) {
 			tickCommandList.add(c);

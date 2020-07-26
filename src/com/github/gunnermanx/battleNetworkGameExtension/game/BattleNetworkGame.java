@@ -30,13 +30,21 @@ import net.sf.json.JSONObject;
 public class BattleNetworkGame implements UnitDamagedListener {
 	
 	// 50ms tick time => 20hz game ticker
-	public static final int INTERVAL_MS = 50;
+	private static final int TICKS_PER_SECOND = 20;	
+	public static final int INTERVAL_MS = 1000 / TICKS_PER_SECOND;
 	// Energy is gained at a rate of 1 second
 	private static final int MILLISECONDS_PER_ENERGY = 2000;
 	// ticks per energy is naturally = MILLISECONDS_PER_ENERGY / INTERVAL_MS
 	public static final int TICKS_PER_ENERGY = MILLISECONDS_PER_ENERGY / INTERVAL_MS;
 	// Max energy
 	private static final int MAX_ENERGY = 6;
+	
+	// Milliseconds before the game starts after the tick starts
+	private static final int STARTING_TIME_MILLISECONDS = 5000;
+	private static final int ROUND_DURATION_MILLISECONDS = 60000;
+	
+	public static final int ROUND_START_TICK = STARTING_TIME_MILLISECONDS / INTERVAL_MS;
+	public static final int ROUND_END_TICK = ROUND_START_TICK + ROUND_DURATION_MILLISECONDS / INTERVAL_MS;
 	
 	// Arena dimensions
 	private static final int ARENA_WIDTH = 3;
@@ -99,7 +107,12 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Handle game tick
     //================================================================================
-	public void handleTick(int currentTick) {		
+	public void handleTick(int currentTick) {
+		// Dont do anything unless the game is started
+		if (!this.ext.IsGameStarted()) {
+			return;
+		}
+		
 		if (player1 == null || player2 == null) {
 			this.ext.Error("Player1 or player2 object is null!");
 			return;
@@ -114,6 +127,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	private void tickEnergy(int currentTick) {
+		int tick = currentTick - ROUND_START_TICK;
 		// i dont think this would actually work quite as expected 
 		// if you are at 10, you are capped, and may spend at any tick that is not % TICKS_PER_ENERGY...
 		// but maybe thats too complex
