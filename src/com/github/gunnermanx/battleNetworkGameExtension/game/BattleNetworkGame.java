@@ -13,7 +13,6 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Tile;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit.UnitDamagedListener;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
-import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.ProjectileFactory;
 import com.smartfoxserver.v2.entities.User;
 
 import net.sf.json.JSONObject;
@@ -31,32 +30,46 @@ import net.sf.json.JSONObject;
 public class BattleNetworkGame implements UnitDamagedListener {
 	
 	// 50ms tick time => 20hz game ticker
-	public static final int INTERVAL_MS = 50;
+	private static final int TICKS_PER_SECOND = 20;	
+	public static final int INTERVAL_MS = 1000 / TICKS_PER_SECOND;
 	// Energy is gained at a rate of 1 second
 	private static final int MILLISECONDS_PER_ENERGY = 2000;
 	// ticks per energy is naturally = MILLISECONDS_PER_ENERGY / INTERVAL_MS
-	public static final int TICKS_PER_ENERGY = MILLISECONDS_PER_ENERGY / INTERVAL_MS;		
+	public static final int TICKS_PER_ENERGY = MILLISECONDS_PER_ENERGY / INTERVAL_MS;
+	// Max energy
+	private static final int MAX_ENERGY = 6;
+	
+	// Milliseconds before the game starts after the tick starts
+	private static final int STARTING_TIME_MILLISECONDS = 5000;
+	private static final int ROUND_DURATION_MILLISECONDS = 60000;
+	
+	public static final int ROUND_START_TICK = STARTING_TIME_MILLISECONDS / INTERVAL_MS;
+	public static final int ROUND_END_TICK = ROUND_START_TICK + ROUND_DURATION_MILLISECONDS / INTERVAL_MS;
 	
 	// Arena dimensions
 	private static final int ARENA_WIDTH = 3;
 	private static final int ARENA_LENGTH = 6;
 	
+	// Static unit ids for player units
 	private static final int P1_PLAYERUNIT_ID = 1;
 	private static final int P2_PLAYERUNIT_ID = 2;
-	
 	// Incremented for every new unit made
 	private int currentUnitId = P2_PLAYERUNIT_ID + 1;
 	
+	// Game entities and arena state
 	private Tile[][] arena;
 	private Unit[][] units;	
-
 	private CopyOnWriteArrayList<Projectile> projectiles;
 		
+	// Players, encapsulates the user and unit
 	public Player player1;
 	public Player player2;	
 		
-	private Chip activeChip;
+	// The active chip that is running for the player, only one can be active at a time.
+	private Chip p1ActiveChip;
+	private Chip p2ActiveChip;
 	
+	// Handy cached ref to the room extension
 	private BattleNetworkExtension ext;
 	
 	
@@ -94,7 +107,12 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Handle game tick
     //================================================================================
-	public void handleTick(int currentTick) {		
+	public void handleTick(int currentTick) {
+		// Dont do anything unless the game is started
+		if (!this.ext.IsGameStarted()) {
+			return;
+		}
+		
 		if (player1 == null || player2 == null) {
 			this.ext.Error("Player1 or player2 object is null!");
 			return;
@@ -109,16 +127,16 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	private void tickEnergy(int currentTick) {
+		int tick = currentTick - ROUND_START_TICK;
 		// i dont think this would actually work quite as expected 
 		// if you are at 10, you are capped, and may spend at any tick that is not % TICKS_PER_ENERGY...
 		// but maybe thats too complex
 		if (currentTick > 0 && (currentTick % TICKS_PER_ENERGY == 0)) {	
-			if (player1.energy < 10) {
+			if (player1.energy < MAX_ENERGY) {
 				player1.energy ++;
 				this.ext.QueueEnergyChanged(currentTick, 1, 1);
-			}
-			
-			if (player2.energy < 10) {
+			}			
+			if (player2.energy < MAX_ENERGY) {
 				player2.energy ++;
 				this.ext.QueueEnergyChanged(currentTick, 2, 1);
 			}
@@ -126,10 +144,16 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	private void tickActiveChip(int currentTick) {
-		if (activeChip != null) {
-			activeChip.Advance();
-			if (activeChip.IsComplete()) {
-				activeChip = null;
+		if (p1ActiveChip != null) {
+			p1ActiveChip.Advance();
+			if (p1ActiveChip.IsComplete()) {
+				p1ActiveChip = null;
+			}
+		}
+		if (p2ActiveChip != null) {
+			p2ActiveChip.Advance();
+			if (p2ActiveChip.IsComplete()) {
+				p2ActiveChip = null;
 			}
 		}
 	}
@@ -240,17 +264,8 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		return u;
 	}		
 	
-	public void spawnProjectile(Player player, int projectileID) {
-		// based on the pid, we want to spawn a type of Projectile
-		JSONObject projectileJson = this.ext.GameData().GetProjectileData(projectileID);				
-		
-		Projectile p = ProjectileFactory.getProjectile(player.owner, projectileJson, player.unit.posX, player.unit.posY);		
-		if (p != null) {
-			projectiles.add(p);
-			this.ext.QueueSpawnProjectile(player.id, projectileID);
-		} else {
-			this.ext.trace("projectile was null!");
-		}
+	public void spawnProjectile(Player player, Projectile p) {				
+		projectiles.add(p);
 	}
 	
 	
@@ -259,7 +274,9 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Public game interface, that acts as input to the game
     //================================================================================
-	public void playChip(int playerId, short cid) {		
+	public void playChip(int playerId, short cid) {
+		// TODO, check for an active chip before allowing one to be played
+		
 		Player player = getPlayer(playerId);
 		// TODO casting now, fix later
 		if (player.hasChipInHand(cid)) {
@@ -287,8 +304,14 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			Unit playerUnit = getPlayer(playerId).unit;
 			Chip chip = ChipFactory.getChip(this, cid, player, chipJson, playerUnit.posX, playerUnit.posY);
 			if (chip != null) {
-				activeChip = chip;
-				activeChip.Init();
+				if (playerId == 1) {
+					p1ActiveChip = chip;
+					p1ActiveChip.Init();
+				} else {
+					p2ActiveChip = chip;
+					p2ActiveChip.Init();
+				}
+				
 			}
 		}		
 	}
@@ -355,7 +378,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		}
 	}
 	
-	private Player getPlayer(int id) {
+	public Player getPlayer(int id) {
 		if (id == 1) {
 			return player1;
 		} else if (id == 2) {
