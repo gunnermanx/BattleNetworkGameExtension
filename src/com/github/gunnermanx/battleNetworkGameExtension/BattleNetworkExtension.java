@@ -75,8 +75,6 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	@Override
 	public void init() {
-		trace("BattleNetworkExtension started");
-				
 		gameData = ((BattleNetworkZoneExtension) this.getParentZone().getExtension()).GetGameData();		
 		
 		// TODO Send data about each player, maybe basic unit data? payload		
@@ -228,7 +226,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	
 	public void SendChipHandInit(User user, short[] cids, short cidNext) {
 		
-		this.trace(String.format("SENDING HAND TO PLAYER %d: [%d,%d,%d,%d]", user.getPlayerId(), cids[0], cids[1], cids[2], cids[3] ));
+		//this.trace(String.format("SENDING HAND TO PLAYER %d: [%d,%d,%d,%d]", user.getPlayerId(), cids[0], cids[1], cids[2], cids[3] ));
 		
 		SFSObject payload = new SFSObject();
 		SFSArray chips = new SFSArray();
@@ -242,8 +240,7 @@ public class BattleNetworkExtension extends SFSExtension {
 	}
 	
 		
-	public void QueueEnergyChanged(int currentTick, int playerId, int delta) {
-		this.trace(String.format("energy changed for player %d, delta: %d at TICK: %d", playerId, delta, currentTick));
+	public void QueueEnergyChanged(int currentTick, int playerId, int delta) {		
 		Command e = new EnergyChangedCommand(playerId, delta);		
 		QueueCommand(e);
 	}

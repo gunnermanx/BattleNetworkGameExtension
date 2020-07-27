@@ -14,6 +14,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit.UnitDamagedListener;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
 import com.smartfoxserver.v2.entities.User;
+import com.smartfoxserver.v2.entities.data.ISFSArray;
 
 import net.sf.json.JSONObject;
 
@@ -41,7 +42,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	
 	// Milliseconds before the game starts after the tick starts
 	private static final int STARTING_TIME_MILLISECONDS = 5000;
-	private static final int ROUND_DURATION_MILLISECONDS = 60000;
+	private static final int ROUND_DURATION_MILLISECONDS = 99000;
 	
 	public static final int ROUND_START_TICK = STARTING_TIME_MILLISECONDS / INTERVAL_MS;
 	public static final int ROUND_END_TICK = ROUND_START_TICK + ROUND_DURATION_MILLISECONDS / INTERVAL_MS;
@@ -127,7 +128,6 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	private void tickEnergy(int currentTick) {
-		int tick = currentTick - ROUND_START_TICK;
 		// i dont think this would actually work quite as expected 
 		// if you are at 10, you are capped, and may spend at any tick that is not % TICKS_PER_ENERGY...
 		// but maybe thats too complex
@@ -185,7 +185,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				Unit u = units[p.posX][p.posY];
 				if (u != null && u.owner != p.owner) {	
 					
-					this.ext.trace("hit!");
+					//this.ext.trace("hit!");
 					//this.ext.trace(String.format("  Hit with projectile %d!", p.toString()));
 											
 					u.damage(p.damage);
@@ -211,22 +211,22 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Spawn entities
     //================================================================================	
-	public void createPlayer(User user) {
+	public void createPlayer(User user, ISFSArray deck) {
 		// TODO see if there are reconnection issues
 		int id = user.getPlayerId();
 		
-		this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
+		//this.ext.trace("CreatePlayer name:%s, id:%d", user.getName(), id);
 		
 		if (id == 1) {
 			if (player1 == null) {
-				player1 = new Player(id, user, Owner.PLAYER1);
+				player1 = new Player(id, user, Owner.PLAYER1, deck);
 				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
 				player1.unit.registerUnitDamagedListener(this);
 				//this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
-				player2 = new Player(id, user, Owner.PLAYER2);
+				player2 = new Player(id, user, Owner.PLAYER2, deck);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
 				player2.unit.registerUnitDamagedListener(this);
 				//this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());

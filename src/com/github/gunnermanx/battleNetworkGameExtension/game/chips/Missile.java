@@ -28,6 +28,8 @@ public class Missile extends Chip {
 		int speed = dataForLevel.getInt(GameData.ChipDataKeys.PROJECTILE_SPEED);
 		int damage = dataForLevel.getInt(GameData.ChipDataKeys.DAMAGE);
 		
+		// start one tile ahead
+		//int x = (this.player.id == 1) ? this.playerX + 1 : this.playerX - 1;	
 		Projectile p = new StraightProjectile(this.player.owner, speed, damage, this.playerX, this.playerY);
 		
 		this.game.spawnProjectile(player, p);
