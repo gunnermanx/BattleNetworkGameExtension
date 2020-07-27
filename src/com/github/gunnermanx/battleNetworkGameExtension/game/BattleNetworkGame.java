@@ -14,6 +14,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit.UnitDamagedListener;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
 import com.smartfoxserver.v2.entities.User;
+import com.smartfoxserver.v2.entities.data.ISFSArray;
 
 import net.sf.json.JSONObject;
 
@@ -127,7 +128,6 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	private void tickEnergy(int currentTick) {
-		int tick = currentTick - ROUND_START_TICK;
 		// i dont think this would actually work quite as expected 
 		// if you are at 10, you are capped, and may spend at any tick that is not % TICKS_PER_ENERGY...
 		// but maybe thats too complex
@@ -211,7 +211,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	//================================================================================
     // Spawn entities
     //================================================================================	
-	public void createPlayer(User user) {
+	public void createPlayer(User user, ISFSArray deck) {
 		// TODO see if there are reconnection issues
 		int id = user.getPlayerId();
 		
@@ -219,14 +219,14 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		
 		if (id == 1) {
 			if (player1 == null) {
-				player1 = new Player(id, user, Owner.PLAYER1);
+				player1 = new Player(id, user, Owner.PLAYER1, deck);
 				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
 				player1.unit.registerUnitDamagedListener(this);
 				//this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
-				player2 = new Player(id, user, Owner.PLAYER2);
+				player2 = new Player(id, user, Owner.PLAYER2, deck);
 				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
 				player2.unit.registerUnitDamagedListener(this);
 				//this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());

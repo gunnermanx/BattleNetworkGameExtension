@@ -1,14 +1,11 @@
 package com.github.gunnermanx.battleNetworkGameExtension.handlers.serverEvent;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
-import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkZoneExtension;
-import com.github.gunnermanx.battleNetworkGameExtension.model.PlayerAuth;
 import com.smartfoxserver.bitswarm.sessions.ISession;
 import com.smartfoxserver.v2.core.ISFSEvent;
 import com.smartfoxserver.v2.core.SFSEventParam;
+import com.smartfoxserver.v2.db.IDBManager;
+import com.smartfoxserver.v2.entities.data.ISFSArray;
+import com.smartfoxserver.v2.entities.data.ISFSObject;
 import com.smartfoxserver.v2.exceptions.SFSErrorCode;
 import com.smartfoxserver.v2.exceptions.SFSErrorData;
 import com.smartfoxserver.v2.exceptions.SFSException;
@@ -17,13 +14,8 @@ import com.smartfoxserver.v2.extensions.BaseServerEventHandler;
 
 public class LoginEventHandler extends BaseServerEventHandler
 {
-    private final EntityManagerFactory emf;
  
-    public LoginEventHandler(EntityManagerFactory emf) {		
-        this.emf = emf;
-    }
- 
-    @Override
+	@Override
     public void handleServerEvent(ISFSEvent event) throws SFSException
     {
     	SFSErrorData errData = null;
@@ -34,22 +26,23 @@ public class LoginEventHandler extends BaseServerEventHandler
     	
     	// Query the db
     	try {
-    		EntityManager em = emf.createEntityManager();
+    		IDBManager dbManager = this.getParentExtension().getParentZone().getDBManager();
+    		String query = "SELECT * FROM player_auth pa WHERE pa.username = ?";
     		
-    		PlayerAuth pa = em.createQuery("SELECT pa FROM PlayerAuth pa WHERE pa.username = ?1", PlayerAuth.class)
-		    	.setParameter(1, username)
-		    	.getSingleResult();
-    		
-    		// Successful login
-    		if (getApi().checkSecurePassword(session, pa.GetSecret(), password)) {
-    			session.setProperty("account", pa.GetAccount().GetId());    			
-    		} else {
-    			// Create the error code that will be sent to the client and raise the exception
-                errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
-                errData.addParameter(username);
+    		ISFSArray resArr = dbManager.executeQuery(query, new Object[] {username});
+    		if (resArr.size() > 0) {
+    			ISFSObject res = resArr.getSFSObject(0); 
+    			// Successful login    			
+    			String secret = res.getUtfString("secret");
+        		if (getApi().checkSecurePassword(session, secret, password)) {
+        			session.setProperty("account", res.getInt("account_id"));
+        			return;
+        		} 
     		}
     		
-            em.close();
+			// Create the error code that will be sent to the client and raise the exception
+            errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
+            errData.addParameter(username);    			
                     		
     	} catch (Exception e) {    		
             errData = new SFSErrorData(SFSErrorCode.LOGIN_BAD_USERNAME);
