@@ -58,7 +58,7 @@ public class UserJoinZoneEventHandler extends BaseServerEventHandler {
 			    	.setParameter(1, accId)
 			    	.getSingleResult();
 			
-			em.close();
+			
 			
 			user.setProperty(ACCOUNT, accId);
 			user.setProperty(DECK_ENTRIES, acc.GetPlayerDeckEntries());
@@ -80,6 +80,8 @@ public class UserJoinZoneEventHandler extends BaseServerEventHandler {
 					xpVariable.getIntValue(), 
 					(short) pointsVariable.getValue()
 			));			
+			
+			em.close();
 			
 		} catch(Exception e) {
 			// TODO

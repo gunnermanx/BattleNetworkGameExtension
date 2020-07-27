@@ -41,7 +41,7 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	
 	// Milliseconds before the game starts after the tick starts
 	private static final int STARTING_TIME_MILLISECONDS = 5000;
-	private static final int ROUND_DURATION_MILLISECONDS = 60000;
+	private static final int ROUND_DURATION_MILLISECONDS = 99000;
 	
 	public static final int ROUND_START_TICK = STARTING_TIME_MILLISECONDS / INTERVAL_MS;
 	public static final int ROUND_END_TICK = ROUND_START_TICK + ROUND_DURATION_MILLISECONDS / INTERVAL_MS;

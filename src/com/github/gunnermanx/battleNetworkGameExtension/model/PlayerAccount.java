@@ -33,14 +33,14 @@ public class PlayerAccount {
 	@Column(name = "points", columnDefinition = "SMALLINT UNSIGNED NOT NULL DEFAULT 0")
 	private short points;
 	
-	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<PlayerDeckEntry> playerDeck;
 	
 	public List<PlayerDeckEntry> GetPlayerDeckEntries() {
 		return this.playerDeck;
 	}
 		
-	@OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<PlayerChip> playerChips = new ArrayList<PlayerChip>();
 	
 	
