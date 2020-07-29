@@ -301,7 +301,10 @@ public class BattleNetworkGame implements UnitDamagedListener {
 			return;
 		}
 		Tile t = arena[posX][posY];
-		t.effect = tileEffect; 
+		t.effect = tileEffect;
+		if (units[posX][posY] != null) {
+			t.UnitEnteredTile(units[posX][posY]);
+		}
 	}
 	
 	

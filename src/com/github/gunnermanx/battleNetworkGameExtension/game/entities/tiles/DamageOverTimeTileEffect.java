@@ -33,7 +33,7 @@ public class DamageOverTimeTileEffect extends BaseTileEffect {
 	@Override
 	public void Advance() {
 		progress++;		
-		if (this.unit != null) {
+		if (this.unit != null && unit.owner != owner) {
 			if (progress % BattleNetworkGame.TICKS_PER_SECOND == 0) {				
 				game.damageUnit(unit, this.damagePerSecond);				
 			}
