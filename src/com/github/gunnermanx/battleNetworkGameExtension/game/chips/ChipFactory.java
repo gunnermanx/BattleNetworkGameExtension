@@ -10,12 +10,14 @@ public class ChipFactory {
 	public static Chip getChip(BattleNetworkGame game, short cid, Player player, JSONObject data, int pUnitX, int pUnitY) {
 		
 		switch (cid) {
-			case (short) 0:
+			case (short) 10:
+				return new Cannon(game, player, data, pUnitX, pUnitY);				
+			case (short) 20:
 				return new Missile(game, player, data, pUnitX, pUnitY);
-			case (short) 1:
-				return new Cannon(game, player, data, pUnitX, pUnitY);
-			case (short) 2:
+			case (short) 50:
 				return new Sword(game, player, data, pUnitX, pUnitY);
+			case (short) 80:
+				return new Poison(game, player, data, pUnitX, pUnitY);
 		} 
 		
 		

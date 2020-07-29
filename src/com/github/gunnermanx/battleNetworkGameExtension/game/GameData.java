@@ -62,6 +62,7 @@ public class GameData {
 		public static final String DAMAGE = "damage";
 		public static final String DEPTH = "depth";
 		public static final String WIDTH = "width";
+		public static final String DURATION = "duration";
 	}
 	
 	

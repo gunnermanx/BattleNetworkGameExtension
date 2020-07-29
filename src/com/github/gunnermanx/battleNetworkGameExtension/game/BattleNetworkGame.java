@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.gunnermanx.battleNetworkGameExtension.BattleNetworkExtension;
 import com.github.gunnermanx.battleNetworkGameExtension.game.chips.Chip;
 import com.github.gunnermanx.battleNetworkGameExtension.game.chips.ChipFactory;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Player;
-import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Tile;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.Unit.UnitDamagedListener;
 import com.github.gunnermanx.battleNetworkGameExtension.game.entities.projectiles.Projectile;
+import com.github.gunnermanx.battleNetworkGameExtension.game.entities.tiles.BaseTileEffect;
+import com.github.gunnermanx.battleNetworkGameExtension.game.entities.tiles.Tile;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSArray;
 
@@ -31,7 +33,7 @@ import net.sf.json.JSONObject;
 public class BattleNetworkGame implements UnitDamagedListener {
 	
 	// 50ms tick time => 20hz game ticker
-	private static final int TICKS_PER_SECOND = 20;	
+	public static final int TICKS_PER_SECOND = 20;	
 	public static final int INTERVAL_MS = 1000 / TICKS_PER_SECOND;
 	// Energy is gained at a rate of 1 second
 	private static final int MILLISECONDS_PER_ENERGY = 2000;
@@ -48,8 +50,8 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	public static final int ROUND_END_TICK = ROUND_START_TICK + ROUND_DURATION_MILLISECONDS / INTERVAL_MS;
 	
 	// Arena dimensions
-	private static final int ARENA_WIDTH = 3;
-	private static final int ARENA_LENGTH = 6;
+	public static final int ARENA_WIDTH = 3;
+	public static final int ARENA_LENGTH = 6;
 	
 	// Static unit ids for player units
 	private static final int P1_PLAYERUNIT_ID = 1;
@@ -73,6 +75,12 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	// Handy cached ref to the room extension
 	private BattleNetworkExtension ext;
 	
+	
+	public Object p1PlayerLock = new Object();
+	public Object p2PlayerLock = new Object();
+	
+	public AtomicInteger p1Ready = new AtomicInteger(0);
+	public AtomicInteger p2Ready = new AtomicInteger(0);
 	
 	//================================================================================
     // Initialize
@@ -121,10 +129,21 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		
 		// Add energy if needed
 		tickEnergy(currentTick);
+		// Advance any active tile effects
+		tickTiles(currentTick);
 		// Advance any active chips
 		tickActiveChip(currentTick);		
 		// Ask the Arena to advance projectiles
 		tickProjectiles(currentTick);
+	}
+	
+	private void tickTiles(int currentTick) {
+		for (int x = 0; x < ARENA_LENGTH; x++) {
+			Tile[] arenaCol = arena[x];
+			for (int y = 0; y < ARENA_WIDTH; y++) {				
+				arenaCol[y].Advance();
+			}
+		}
 	}
 	
 	private void tickEnergy(int currentTick) {
@@ -219,17 +238,25 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		
 		if (id == 1) {
 			if (player1 == null) {
-				player1 = new Player(id, user, Owner.PLAYER1, deck);
-				player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
-				player1.unit.registerUnitDamagedListener(this);
-				//this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
+				synchronized(ext.Game().p1PlayerLock) {
+					player1 = new Player(id, user, Owner.PLAYER1, deck);
+					player1.unit = spawnPlayerUnit(Owner.PLAYER1, "pu1", 0, 1);
+					player1.unit.registerUnitDamagedListener(this);					
+					if (p1Ready.intValue() == 1) {
+						this.ext.SendChipHandInit(user, player1.deck.getChipIdsInHand(), player1.deck.getTopCidInDeck());
+					}
+				}
 			}
 		} else if (id == 2) {
 			if (player2 == null) {
-				player2 = new Player(id, user, Owner.PLAYER2, deck);
-				player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
-				player2.unit.registerUnitDamagedListener(this);
-				//this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());
+				synchronized(ext.Game().p2PlayerLock) {
+					player2 = new Player(id, user, Owner.PLAYER2, deck);
+					player2.unit = spawnPlayerUnit(Owner.PLAYER2, "pu2", 5, 1);
+					player2.unit.registerUnitDamagedListener(this);
+					if (p2Ready.intValue() == 1) {
+						this.ext.SendChipHandInit(user, player2.deck.getChipIdsInHand(), player2.deck.getTopCidInDeck());
+					}
+				}
 			}
 		}
 	}
@@ -269,6 +296,13 @@ public class BattleNetworkGame implements UnitDamagedListener {
 	}
 	
 	
+	public void spawnTileEffect(BaseTileEffect tileEffect, int posX, int posY) {
+		if (posX >= ARENA_LENGTH || posX < 0 || posY >= ARENA_WIDTH || posY < 0) {
+			return;
+		}
+		Tile t = arena[posX][posY];
+		t.effect = tileEffect; 
+	}
 	
 	
 	//================================================================================
@@ -324,32 +358,40 @@ public class BattleNetworkGame implements UnitDamagedListener {
 				case (byte)'u':
 					if (isPathable(u.owner, u.posX, u.posY+1)) {
 						units[u.posX][u.posY] = null;
+						arena[u.posX][u.posY].UnitExitedTile(u);
 						u.posY++;
 						units[u.posX][u.posY] = u;
+						arena[u.posX][u.posY].UnitEnteredTile(u);
 						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'d':
 					if (isPathable(u.owner, u.posX, u.posY-1)) {
 						units[u.posX][u.posY] = null;
+						arena[u.posX][u.posY].UnitExitedTile(u);
 						u.posY--;
 						units[u.posX][u.posY] = u;
+						arena[u.posX][u.posY].UnitEnteredTile(u);
 						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'l':
 					if (isPathable(u.owner, u.posX-1, u.posY)) {
 						units[u.posX][u.posY] = null;
+						arena[u.posX][u.posY].UnitExitedTile(u);
 						u.posX--;
 						units[u.posX][u.posY] = u;
+						arena[u.posX][u.posY].UnitEnteredTile(u);
 						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;
 				case (byte)'r':
 					if (isPathable(u.owner, u.posX+1, u.posY)) {
 						units[u.posX][u.posY] = null;
+						arena[u.posX][u.posY].UnitExitedTile(u);
 						u.posX++;
 						units[u.posX][u.posY] = u;
+						arena[u.posX][u.posY].UnitEnteredTile(u);
 						this.ext.QueueMoveStateChange(player.id, u.posX, u.posY);
 					}
 					break;

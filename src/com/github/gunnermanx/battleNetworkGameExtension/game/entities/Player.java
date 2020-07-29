@@ -1,5 +1,6 @@
 package com.github.gunnermanx.battleNetworkGameExtension.game.entities;
 
+
 import com.github.gunnermanx.battleNetworkGameExtension.game.BattleNetworkGame.Owner;
 import com.smartfoxserver.v2.entities.User;
 import com.smartfoxserver.v2.entities.data.ISFSArray;
@@ -12,6 +13,7 @@ public class Player {
 	public Unit unit;
 	public Deck deck;
 	
+	
 	public Player(int id, User user, Owner owner, ISFSArray deckData) {
 		this.id = id;
 		this.user = user;
@@ -19,8 +21,6 @@ public class Player {
 		this.owner = owner;				
 		this.deck = new Deck(deckData);
 	}
-	
-	
 	
 	public boolean hasChipInHand(short chipId) {
 		return this.deck.isChipInHand(chipId); 
