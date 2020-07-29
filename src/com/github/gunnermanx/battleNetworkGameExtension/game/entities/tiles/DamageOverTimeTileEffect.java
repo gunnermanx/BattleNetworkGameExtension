@@ -21,14 +21,12 @@ public class DamageOverTimeTileEffect extends BaseTileEffect {
 
 	@Override
 	public void EnteredTile(Unit unit) {
-		progress = 0;
 		this.unit = unit;
 		game.damageUnit(unit, this.damagePerSecond);
 	}
 
 	@Override
 	public void ExitedTile(Unit unit) {
-		progress = 0;
 		this.unit = null;
 	}
 
@@ -37,7 +35,7 @@ public class DamageOverTimeTileEffect extends BaseTileEffect {
 		progress++;		
 		if (this.unit != null) {
 			if (progress % BattleNetworkGame.TICKS_PER_SECOND == 0) {				
-				game.damageUnit(unit, this.damagePerSecond);
+				game.damageUnit(unit, this.damagePerSecond);				
 			}
 		}
 	}
