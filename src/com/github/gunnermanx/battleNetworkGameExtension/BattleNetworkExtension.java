@@ -16,6 +16,7 @@ import com.github.gunnermanx.battleNetworkGameExtension.game.commands.Command;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.DamageDealtCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.EnergyChangedCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.game.commands.MoveCommand;
+import com.github.gunnermanx.battleNetworkGameExtension.game.commands.TileOwnershipChangeCommand;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.BasicAttackHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.ChipPlayedHandler;
 import com.github.gunnermanx.battleNetworkGameExtension.handlers.clientRequest.MovementHandler;
@@ -268,6 +269,12 @@ public class BattleNetworkExtension extends SFSExtension {
 	public void QueueBasicAttack(int playerId) {
 		Command ba = new BasicAttackCommand(playerId);
 		QueueCommand(ba);
+	}
+	
+	public void QueueTileOwnershipChange(int playerId, int x, int y) {
+		Command to = new TileOwnershipChangeCommand(playerId, x, y);
+		this.trace(String.format("queue tile ownership change [%d,%d] to player: %d", x,y, playerId));
+		QueueCommand(to);
 	}
 	
 	

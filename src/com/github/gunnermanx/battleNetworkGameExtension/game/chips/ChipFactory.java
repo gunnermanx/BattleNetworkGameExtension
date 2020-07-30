@@ -18,6 +18,8 @@ public class ChipFactory {
 				return new Sword(game, player, data, pUnitX, pUnitY);
 			case (short) 80:
 				return new Poison(game, player, data, pUnitX, pUnitY);
+			case (short) 100:
+				return new AreaGrab(game, player, data, pUnitX, pUnitY);
 		} 
 		
 		

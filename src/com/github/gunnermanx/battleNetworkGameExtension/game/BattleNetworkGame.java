@@ -518,6 +518,38 @@ public class BattleNetworkGame implements UnitDamagedListener {
 		return null;
 	}
 	
+	public int getFirstXWithEnemyTile(Owner owner, int rowX, int rowY) {
+		if (owner == Owner.PLAYER1) {			
+		    for (int x = rowX; x < ARENA_LENGTH; x++) {
+		    	Tile t = arena[x][rowY];
+		    	if (t.owner != owner) {
+		    		return x;
+		    	}
+		    }
+		} else if (owner == Owner.PLAYER2) {			
+			for (int x = rowX; x >= 0; x--) {
+				Tile t = arena[x][rowY];
+		    	if (t.owner != owner) {
+		    		return x;
+		    	}
+		    }
+		}
+		return rowX;
+	}
+	
+	public void setSingleTileOwnership(Owner owner,int rowX, int rowY) {
+		int playerId = (owner == Owner.PLAYER1) ? 1 : 2;
+		arena[rowX][rowY].owner = owner;		
+		this.ext.QueueTileOwnershipChange(playerId, rowX, rowY);
+	}
+	
+	public void setColumnTileOwnership(Owner owner,int rowX) {
+		setSingleTileOwnership(owner, rowX, 0);
+		setSingleTileOwnership(owner, rowX, 1);
+		setSingleTileOwnership(owner, rowX, 2);
+	}
+	
+	
 	private boolean isPathable(Owner owner, int x, int y) {
 		if (x >= ARENA_LENGTH || x < 0 || y >= ARENA_WIDTH || y < 0) {
 			return false;

@@ -22,7 +22,7 @@ public class DamageOverTimeTileEffect extends BaseTileEffect {
 	@Override
 	public void EnteredTile(Unit unit) {
 		this.unit = unit;
-		game.damageUnit(unit, this.damagePerSecond);
+		//game.damageUnit(unit, this.damagePerSecond);
 	}
 
 	@Override

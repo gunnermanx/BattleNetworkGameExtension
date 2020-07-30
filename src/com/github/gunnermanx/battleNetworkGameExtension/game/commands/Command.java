@@ -10,6 +10,7 @@ public abstract class Command {
 	public static final byte CHIP_DRAWN_COMMAND_ID = (byte) 4;
 	public static final byte CHIP_PLAYED_COMMAND_ID = (byte) 5;
 	public static final byte BASIC_ATTACK_COMMAND_ID = (byte) 6;
+	public static final byte TILE_OWNERSHIP_CHANGE_COMMAND_ID = (byte) 7;
 	
 	public abstract SFSArray Serialize();
 }

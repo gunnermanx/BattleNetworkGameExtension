@@ -54,5 +54,17 @@
         "duration": 11
       }
     ]
+  },
+  "100": {
+  	"name": "AreaGrab_Chip",
+    "cost": 3,
+    "data": [
+      { 
+         
+      },
+      {
+        
+      }
+    ]
   }
 }
