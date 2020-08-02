@@ -11,6 +11,18 @@
       }
     ]
   },
+  "11": {
+    "name": "Vulcan_Chip",
+    "cost": 1,
+    "data": [
+      {      
+        "damage": 1
+      },
+      {
+        "damage": 1
+      }
+    ]
+  },
   "20": {
     "name": "Missile_Chip",
     "cost": 2,

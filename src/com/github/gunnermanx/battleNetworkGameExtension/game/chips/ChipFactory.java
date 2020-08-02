@@ -11,7 +11,9 @@ public class ChipFactory {
 		
 		switch (cid) {
 			case (short) 10:
-				return new Cannon(game, player, data, pUnitX, pUnitY);				
+				return new Cannon(game, player, data, pUnitX, pUnitY);
+			case (short) 11:
+				return new Vulcan(game, player, data, pUnitX, pUnitY);
 			case (short) 20:
 				return new Missile(game, player, data, pUnitX, pUnitY);
 			case (short) 50:
